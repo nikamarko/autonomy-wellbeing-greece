@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Autonomy & Well-Being Studio — Greece</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Commissioner:wght@300;400;500;600&family=GFS+Didot&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF1EF; --panel:#F8FAF9; --ink:#1B2A33; --muted:#5B6B72; --line:#CBD4D2;
+  --sea:#1F5E7A; --sun:#D9961A; --zA:#C8553D; --zB:#D9961A; --zC:#4F9D8F; --zD:#2F5F8A; --deficit:#2F5F8A; --olive:#62763A; --warn:#A5432A;
+  --display:"GFS Didot","Didot","Bodoni 72",Georgia,serif;
+  --ui:"Commissioner",system-ui,-apple-system,"Segoe UI",sans-serif;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12191D; --panel:#18232A; --ink:#E4ECEA; --muted:#93A4A9; --line:#2C3B42;
+  --sea:#5DA3C2; --sun:#E8AB35; --deficit:#5D8FC2; --olive:#9BB167; --warn:#E07A5F; color-scheme:dark;}}
+:root[data-theme="dark"]{--bg:#12191D; --panel:#18232A; --ink:#E4ECEA; --muted:#93A4A9; --line:#2C3B42;
+  --sea:#5DA3C2; --sun:#E8AB35; --deficit:#5D8FC2; --olive:#9BB167; --warn:#E07A5F; color-scheme:dark;}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.5 var(--ui)}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--sea);outline-offset:2px}
+.wrap{max-width:1320px;margin:0 auto;padding:28px 24px 64px}
+header.top{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,500px);gap:28px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:18px}
+header.top h1{font-size:clamp(30px,4.2vw,50px);line-height:1.05;letter-spacing:-0.01em;max-width:24ch}
+header.top .byline{margin-top:6px;font-size:13px;letter-spacing:.01em}
+header.top p{margin:10px 0 0;color:var(--muted);max-width:62ch}
+.mapwrap{margin:0;width:100%}
+#map{width:100%;height:auto;display:block;background:color-mix(in srgb,var(--sea) 11%,var(--bg));border-radius:14px}
+#map .land{fill:var(--panel);stroke:var(--line);stroke-width:1}
+#map circle{cursor:pointer;stroke:var(--panel);stroke-width:2}
+#map circle:hover{stroke:var(--ink)}
+#map circle.sel{stroke:var(--ink);stroke-width:3}
+#map text{font:600 24px var(--ui);fill:var(--ink);paint-order:stroke;stroke:var(--bg);stroke-width:4px}
+.zlegend{display:flex;gap:14px;font-size:12.5px;color:var(--muted);margin-top:4px;flex-wrap:wrap}
+.place{margin-top:16px;display:grid;gap:6px;max-width:420px}
+.place label{font-size:13px;color:var(--muted)}
+.place select{padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);font-size:15px}
+#cityInfo{margin:0;font-size:13.5px;color:var(--muted)}
+.zones{display:none}
+.zones button{border:0;background:transparent;padding:10px 14px;cursor:pointer;text-align:left;min-width:108px;border-left:1px solid var(--line)}
+.zones button:first-child{border-left:0}
+.zones button b{display:block;font-family:var(--display);font-weight:400;font-size:22px;line-height:1}
+.zones button span{font-size:12.5px;color:var(--muted)}
+.zones button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.zones button[aria-pressed="true"] span{color:inherit;opacity:.75}
+.layout{display:grid;grid-template-columns:320px 1fr;gap:28px;margin-top:26px;align-items:start}
+aside.controls{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);max-height:calc(100vh - 24px);overflow:auto;padding-right:6px}
+fieldset{border:0;box-shadow:inset 0 1px var(--line);margin:0;padding:14px 0 10px;min-width:0}
+legend{font-family:var(--display);font-size:19px;padding:0 0 4px;float:left;width:100%}
+fieldset>*:not(legend){clear:both}
+aside fieldset:first-child{box-shadow:none;padding-top:0}
+.row{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;margin:8px 0}
+.row label{font-size:13.5px}
+.row output{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.row input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--sea)}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;grid-column:1/-1}
+.seg button{flex:1;border:0;background:transparent;padding:6px 4px;font-size:13px;cursor:pointer;border-left:1px solid var(--line)}
+.seg button:first-child{border-left:0}
+.seg button[aria-pressed="true"]{background:var(--sea);color:#fff}
+.check{display:flex;gap:8px;align-items:center;font-size:13.5px;margin:8px 0}
+.check input{accent-color:var(--sea);width:16px;height:16px}
+.hint{font-size:12.5px;color:var(--muted);margin:2px 0 6px}
+main{min-width:0}
+.headline{display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:end}
+.big{font-family:var(--display);font-size:clamp(64px,9vw,112px);line-height:.85;font-variant-numeric:lining-nums}
+.big small{font-size:.4em}
+.biglabel{font-size:14px;color:var(--muted);margin-top:8px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px 22px;border-left:1px solid var(--line);padding-left:24px}
+.kpi b{display:block;font-size:22px;font-weight:500;font-variant-numeric:tabular-nums}
+.kpi span{font-size:12.5px;color:var(--muted)}
+section.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-top:22px}
+section.card h2{font-size:25px}
+section.card .sub{color:var(--muted);font-size:13.5px;margin:4px 0 14px;max-width:70ch}
+.scroll{overflow-x:auto}
+.grid2{display:grid;grid-template-columns:1.25fr 1fr;gap:22px}
+svg text{font-family:var(--ui);fill:var(--muted);font-size:11px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:8px;align-items:center}
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:5px}
+.ramp{width:120px;height:10px;border-radius:5px;background:linear-gradient(90deg,var(--deficit),var(--panel),var(--sun));display:inline-block;border:1px solid var(--line)}
+.wb-row{display:grid;grid-template-columns:128px 1fr 40px;gap:10px;align-items:center;margin:9px 0;font-size:13.5px}
+.bar{height:10px;background:color-mix(in srgb,var(--line) 55%,transparent);border-radius:5px;position:relative;overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--olive);border-radius:5px}
+.wb-row output{text-align:right;font-variant-numeric:tabular-nums}
+.wbtotal{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}
+.wbtotal b{font-family:var(--display);font-weight:400;font-size:52px;line-height:1;color:var(--olive)}
+.btn{border:1px solid var(--ink);background:var(--ink);color:var(--bg);border-radius:8px;padding:9px 14px;cursor:pointer;font-size:14px}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn:disabled{opacity:.5;cursor:progress}
+.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+th:first-child,td:first-child{text-align:left}
+th{font-weight:500;color:var(--muted)}
+.export{margin-top:14px}
+.printsum{display:none}
+@media print{aside.controls,.export,.minibar,#sample,#sampleStatus,#save,#clear,.mapwrap{display:none!important}.layout{grid-template-columns:1fr}section.card{break-inside:avoid}.printsum{display:block;font-size:12px;margin:10px 0}body{background:#fff}}
+.note{font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);margin-top:28px;padding-top:14px;max-width:90ch}
+.pill{display:inline-block;font-size:12px;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
+.minibar{display:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:980px){
+  .layout{grid-template-columns:1fr}
+  aside.controls{position:static;max-height:none;overflow:visible}
+  .grid2{grid-template-columns:1fr}
+  header.top{grid-template-columns:1fr}
+  .headline{grid-template-columns:1fr}
+  .kpis{border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:14px}
+  .mapwrap{width:100%}
+  .minibar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:5;gap:18px;align-items:baseline;justify-content:center;
+    background:var(--ink);color:var(--bg);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px))}
+  .minibar b{font-family:var(--display);font-weight:400;font-size:26px}
+  .minibar span{font-size:12.5px;opacity:.8}
+  .wrap{padding-bottom:110px}
+}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .35s ease}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div>
+    <h1>How self-sufficient, and how good to live in?</h1>
+    <p class="byline">Energy Autonomy and Human Well-Being in Greek Buildings · Marko Nika</p>
+    <p>Test a building design in 69 places across Greece, from Crete and the Cyclades to the Ionian Islands, Epirus and Thrace. Every change reruns a full hourly year of heating, cooling, solar generation and battery storage, alongside six indicators of occupant well-being.</p>
+    <div class="place">
+      <label for="city">Location</label>
+      <select id="city"></select>
+      <p id="cityInfo"></p>
+    </div>
+    <div class="actions export" id="exportBar" hidden><button class="btn ghost" id="csv">Download results (CSV)</button><button class="btn ghost" id="print">Print or save report as PDF</button></div>
+  </div>
+  <figure class="mapwrap">
+    <svg id="map" viewBox="0 0 600 511" role="img" aria-label="Map of Greece with the 69 available locations">
+      <path class="land" d="M99.0,71.5L111.2,70.0L117.5,70.7L123.6,67.3L129.5,67.8L133.5,70.3L139.4,65.9L143.9,66.2L144.9,63.3L151.1,56.9L151.9,53.8L159.7,49.9L162.8,52.1L168.5,49.2L174.0,50.3L174.3,51.8L178.3,51.3L182.3,52.6L190.1,51.8L193.2,47.9L196.5,50.8L197.8,48.9L199.1,38.2L200.8,36.8L221.9,38.1L224.3,36.9L225.7,33.7L229.2,32.3L231.4,34.3L236.3,32.2L241.9,32.3L247.4,34.2L250.8,31.9L255.4,32.1L256.7,30.1L263.3,27.6L266.3,29.5L269.2,27.6L271.1,28.5L272.1,27.7L271.8,23.2L275.7,22.6L278.7,24.2L279.3,22.3L282.2,20.6L285.2,22.1L285.8,23.9L293.8,23.0L297.8,20.6L301.7,29.3L308.4,31.5L312.6,35.9L313.7,35.9L314.2,32.7L318.9,32.1L330.9,36.7L337.6,42.9L341.3,43.6L353.6,40.7L356.2,38.2L363.4,39.5L370.7,36.4L374.7,39.0L388.1,35.2L391.2,29.9L389.5,26.6L390.5,22.9L388.7,21.2L387.8,16.7L384.4,14.4L384.0,11.5L387.4,8.7L394.0,7.2L396.7,9.7L401.5,9.7L408.0,12.5L407.4,14.4L413.6,18.5L414.7,17.0L414.7,22.3L417.0,32.2L415.5,37.1L411.6,35.6L404.4,41.8L399.3,43.1L400.2,44.4L399.3,47.3L400.2,49.8L399.1,52.0L400.3,52.6L399.5,55.4L402.3,58.5L401.9,60.2L400.0,61.4L401.4,63.3L397.8,66.0L398.4,67.2L395.9,66.4L394.7,68.9L394.0,67.9L393.2,71.6L385.9,79.6L383.8,79.4L382.8,75.3L381.6,74.7L384.3,73.9L384.3,72.8L382.0,73.3L381.2,72.3L381.2,73.8L376.7,71.2L355.4,70.0L342.0,64.2L340.2,66.0L335.4,64.8L332.8,63.4L334.8,61.0L333.0,60.0L327.4,60.3L327.5,61.5L324.8,63.0L324.7,64.9L319.2,66.4L314.1,71.2L312.1,70.4L308.9,71.3L306.3,69.3L304.4,70.8L300.9,64.2L297.5,63.5L291.1,65.3L286.7,69.3L287.7,71.1L286.3,72.0L288.3,72.8L275.3,80.2L268.4,79.9L260.3,76.2L254.1,78.5L252.2,80.6L252.3,84.1L255.5,86.1L257.5,90.2L260.6,92.2L262.9,91.9L264.4,93.7L259.2,96.0L259.4,99.2L261.8,102.6L267.1,105.1L269.3,104.6L268.7,100.2L269.8,100.1L274.0,106.0L279.2,107.1L280.6,109.5L282.2,109.5L291.2,121.3L286.0,123.0L278.6,112.5L270.2,110.0L265.6,106.1L254.0,106.5L252.0,110.1L253.3,113.9L256.7,117.7L263.4,119.9L268.7,123.7L267.9,125.7L269.4,127.4L268.4,129.2L269.8,129.1L270.2,131.0L268.5,132.9L269.1,134.0L267.5,134.5L268.7,135.5L264.7,135.3L264.8,134.0L263.6,134.2L263.7,133.0L260.5,130.5L259.4,131.6L257.1,127.4L257.6,125.5L251.0,116.6L237.7,112.2L233.6,113.5L232.2,115.9L233.5,121.4L235.6,121.9L241.1,129.2L250.7,133.2L252.2,136.4L255.0,137.2L252.5,138.4L239.5,134.2L233.3,135.0L234.5,132.0L230.2,124.7L231.3,119.7L229.9,115.4L214.7,108.9L211.1,105.1L206.8,104.6L206.9,102.3L203.1,96.3L209.8,95.2L212.1,92.7L208.1,86.1L204.9,86.5L204.7,89.8L202.8,91.4L199.5,91.6L198.3,95.4L194.8,94.5L193.8,96.1L194.9,96.7L193.5,98.4L189.5,98.7L191.0,102.6L194.1,105.8L188.0,120.3L189.0,128.3L190.7,131.0L196.7,134.9L198.0,140.4L204.7,147.2L209.7,162.2L218.5,167.8L220.1,171.2L228.3,180.6L232.4,190.8L230.0,192.8L224.8,194.2L226.0,195.2L224.5,196.2L219.6,197.3L216.0,196.7L217.6,193.1L219.5,192.3L218.7,196.2L222.7,194.0L223.3,192.3L224.3,192.8L225.3,190.8L220.6,182.4L214.2,181.0L213.0,178.1L209.5,177.9L209.9,182.0L204.3,183.0L203.3,184.2L203.3,187.8L204.9,192.3L206.2,190.0L207.6,190.8L208.6,194.7L210.9,195.1L213.0,198.7L213.0,200.1L210.8,201.8L211.1,203.0L217.2,201.0L214.4,203.0L212.2,206.9L207.4,209.4L204.5,208.9L203.9,211.0L201.4,212.4L195.6,212.4L191.9,209.8L186.5,211.8L186.5,213.8L189.1,213.3L188.1,214.5L189.7,215.6L190.7,214.8L190.3,215.8L196.4,214.3L200.7,219.2L203.5,218.9L205.6,221.1L208.3,219.7L215.4,221.7L218.9,229.5L223.3,228.4L224.1,227.5L222.5,226.6L223.6,226.1L230.2,228.5L231.8,231.9L229.5,233.7L229.1,235.3L230.3,234.5L234.5,236.8L232.2,237.8L231.9,239.1L244.9,239.3L246.8,241.2L245.2,242.7L250.8,249.6L252.9,251.0L256.9,250.5L266.4,254.3L273.0,260.5L273.7,263.2L272.5,265.7L271.3,264.8L268.5,266.3L271.0,274.5L269.8,280.4L271.8,281.8L269.8,282.8L272.9,284.8L272.1,287.8L274.1,290.4L272.5,294.1L273.2,297.3L271.0,300.0L266.3,298.1L266.0,294.6L264.8,295.0L263.7,290.7L262.9,291.2L261.6,288.8L258.7,287.3L258.4,288.8L256.8,289.2L252.2,279.4L248.3,279.9L249.1,278.5L244.5,277.0L246.6,273.6L245.3,271.8L238.3,273.6L235.2,276.0L237.2,276.5L236.0,276.9L225.8,277.0L218.4,281.5L213.9,280.4L212.8,283.5L213.8,286.0L219.5,285.8L223.3,288.7L223.3,291.2L220.3,292.2L219.9,293.6L222.9,295.1L222.5,302.7L232.0,308.3L233.3,307.4L233.2,305.5L230.6,302.4L235.4,301.0L235.8,303.7L234.1,306.8L236.8,308.8L235.2,309.8L240.0,311.5L242.6,313.7L242.6,315.2L238.1,316.9L227.8,317.9L226.0,319.8L228.7,321.6L223.5,322.2L224.5,324.9L222.5,325.1L221.0,324.4L222.2,323.5L217.2,321.2L217.2,317.9L218.4,318.7L219.5,316.1L221.0,317.1L220.5,314.5L215.7,313.7L216.4,313.2L215.7,311.7L213.4,313.7L212.0,310.2L208.7,307.9L204.9,309.8L200.7,303.9L197.7,306.1L198.0,311.2L199.9,315.7L199.5,318.1L203.0,322.0L203.0,323.9L207.8,332.7L207.7,337.9L210.6,337.7L210.6,339.7L212.1,340.6L211.1,340.6L213.1,344.2L213.7,347.5L212.6,347.5L213.7,348.5L213.7,350.9L218.3,359.5L217.6,361.6L219.5,362.2L218.1,365.6L216.0,364.6L214.8,366.2L214.9,368.5L216.4,368.5L215.0,369.8L215.1,371.6L217.6,376.6L221.8,379.3L220.6,381.7L224.5,385.4L224.1,387.1L218.4,386.3L215.9,380.7L211.5,380.8L209.1,375.4L206.1,372.9L206.6,371.3L204.0,368.9L202.7,370.1L202.8,366.7L201.1,361.3L195.5,360.2L189.4,362.1L189.5,365.1L186.5,369.0L187.8,369.5L188.0,371.5L186.0,370.4L186.5,374.2L185.8,374.9L185.3,373.4L184.2,374.7L184.3,380.5L185.7,384.7L184.5,390.1L183.4,385.7L179.9,383.2L178.4,383.7L176.9,381.4L178.8,378.3L178.0,376.4L178.8,374.9L177.6,374.9L177.8,372.1L178.8,372.0L177.7,371.1L178.8,367.5L177.1,367.8L173.4,359.4L169.4,353.9L166.8,354.3L164.7,352.5L165.6,345.0L159.7,344.0L153.8,347.0L152.6,356.3L153.0,359.2L155.3,361.2L150.4,366.1L147.1,360.2L143.8,361.2L140.6,359.6L139.5,354.3L140.7,350.6L139.5,349.1L138.4,349.4L139.2,348.5L138.0,349.4L137.7,346.9L133.4,341.1L132.9,338.2L133.1,332.8L139.2,326.3L140.0,323.9L138.8,318.3L131.8,306.4L123.5,299.7L120.2,298.7L118.4,301.0L117.7,298.5L118.4,294.7L116.9,290.4L107.8,286.7L106.9,283.8L108.4,278.9L110.2,280.1L112.6,279.0L119.2,273.6L118.8,272.6L116.9,274.0L121.5,266.4L121.9,259.3L123.8,261.8L123.4,259.7L130.3,263.2L135.8,264.0L140.3,260.4L143.8,254.0L148.6,250.7L154.5,251.0L158.2,252.7L159.7,255.5L163.4,256.0L166.1,259.9L169.3,261.6L175.6,262.3L180.3,265.2L185.7,265.9L195.2,270.3L205.6,279.4L210.1,278.9L211.7,276.6L206.8,272.7L204.9,272.6L206.1,271.6L209.9,269.1L216.9,270.9L222.8,269.4L225.2,267.7L222.9,264.7L225.6,263.7L220.3,262.8L221.4,261.8L220.0,260.2L216.8,262.0L214.9,261.8L216.0,261.3L214.5,259.6L210.4,259.0L208.7,260.3L211.4,261.3L208.0,261.3L207.2,257.9L202.2,258.9L199.9,257.4L201.8,254.9L196.1,252.5L194.9,250.5L195.4,249.3L193.3,247.2L192.2,248.5L193.2,249.2L191.3,249.1L189.9,251.0L191.0,252.0L190.7,253.5L188.6,254.1L183.3,245.0L179.5,242.7L179.9,245.4L178.0,247.1L179.4,248.2L178.4,250.6L169.6,249.4L167.6,252.0L164.4,248.5L154.6,245.7L150.2,248.1L147.5,246.8L143.7,251.6L141.1,249.5L134.6,250.0L130.0,254.0L125.0,251.5L128.4,253.0L127.6,250.5L128.4,249.5L127.3,249.5L127.6,248.5L124.6,249.1L124.3,246.9L122.1,246.6L121.1,241.7L119.0,239.6L118.2,239.8L120.7,244.2L119.9,244.2L119.8,246.8L116.0,248.8L114.4,251.4L111.6,250.7L111.1,251.5L112.1,252.0L109.7,253.4L108.8,251.0L105.7,250.5L106.9,249.9L106.9,248.5L106.1,249.1L106.9,247.6L107.3,248.4L108.8,246.6L105.8,245.8L105.7,243.6L106.9,244.7L107.7,243.6L106.9,244.2L106.9,240.7L105.4,240.3L106.5,239.8L105.7,239.2L106.3,237.1L102.6,238.6L102.3,231.6L100.3,227.6L96.1,226.1L93.1,217.7L90.4,220.6L88.2,220.7L85.8,217.2L86.9,213.8L90.0,213.1L87.3,210.3L88.0,206.6L90.7,209.3L93.1,206.5L93.5,208.9L95.5,208.8L96.5,206.9L102.5,208.5L102.4,210.9L105.7,213.3L106.7,210.0L110.9,212.5L108.8,207.8L109.9,203.8L105.7,199.1L105.4,201.0L103.0,202.1L104.2,203.0L98.3,201.2L97.3,199.6L98.0,198.7L95.4,198.1L93.5,199.9L94.6,201.0L92.2,201.0L93.0,199.4L92.3,198.1L91.2,198.7L91.9,197.1L91.0,195.5L88.4,197.1L89.3,197.9L88.8,200.1L87.3,202.1L86.5,201.5L91.5,206.2L87.8,205.2L86.1,207.2L84.2,203.8L85.0,202.6L83.4,198.5L78.3,194.8L71.7,187.6L71.9,183.4L63.1,181.9L60.0,176.0L58.1,175.1L56.9,172.2L59.9,171.7L56.9,168.3L59.2,168.5L59.7,167.3L52.3,165.8L53.1,162.9L54.6,162.4L55.1,159.0L49.8,155.5L44.9,154.1L49.9,154.9L55.2,158.1L56.7,156.0L58.7,156.3L61.7,151.6L60.3,149.3L60.6,146.2L65.7,147.6L67.1,145.2L62.7,138.0L61.6,133.1L66.0,132.6L67.3,129.0L69.1,127.6L77.3,127.4L81.2,125.5L82.3,122.3L81.9,119.4L83.9,116.8L84.1,112.3L86.2,110.5L88.1,106.3L88.1,102.0L92.0,98.5L96.0,99.4L97.4,98.4L98.6,95.4L102.0,92.2L102.9,85.1L97.8,77.5L99.1,74.9L99.0,71.5ZM276.4,499.8L276.7,502.7L271.8,500.2L273.7,498.8L276.4,499.8ZM431.8,459.1L438.1,458.2L437.8,461.0L430.5,464.5L428.9,462.8L431.8,459.1ZM399.3,466.9L398.8,468.2L396.2,470.9L398.1,476.2L399.3,475.3L397.3,478.7L396.9,482.3L394.5,487.0L389.6,489.3L387.2,489.5L385.9,488.0L380.5,486.7L370.5,489.0L358.9,488.5L353.6,490.6L344.7,490.1L337.7,492.7L326.3,494.3L310.6,494.3L311.8,487.5L310.8,483.9L308.8,482.6L300.8,481.9L297.2,478.6L291.8,476.9L291.7,475.8L285.6,476.4L280.6,474.8L272.0,475.8L268.5,472.8L263.7,472.9L259.4,471.4L251.4,473.3L246.0,472.3L242.1,468.4L244.1,466.5L243.3,462.7L245.2,458.4L244.5,457.2L245.6,448.3L247.0,445.7L247.8,452.0L250.1,453.6L253.4,452.8L254.0,449.9L253.0,443.1L254.7,440.4L256.8,441.5L256.8,448.3L258.9,451.2L270.6,452.2L272.4,449.9L274.4,449.9L273.7,447.3L275.6,446.5L279.4,447.6L280.6,450.7L279.4,452.8L273.7,452.7L273.2,453.8L279.6,457.2L283.3,455.2L284.0,463.0L288.2,464.6L309.6,458.9L316.3,460.6L319.4,459.1L322.9,460.6L323.6,459.1L328.2,460.6L328.3,464.1L329.6,464.8L346.3,464.9L350.7,468.4L362.2,464.5L368.2,465.5L365.9,468.4L366.1,470.6L367.3,469.2L367.8,470.9L366.3,471.9L365.2,476.4L366.1,479.9L369.8,481.2L371.8,480.7L375.5,476.2L380.1,475.5L384.7,472.8L388.0,474.1L387.4,474.8L388.6,475.5L391.4,474.7L395.9,469.1L397.8,468.9L397.8,466.9L399.3,466.9ZM449.3,452.2L450.5,453.4L450.4,455.7L447.5,455.9L446.4,457.3L446.7,459.2L445.0,460.6L445.4,459.4L442.6,457.2L444.0,455.0L443.8,450.1L441.2,447.4L446.0,438.2L446.2,432.2L449.8,430.2L449.7,437.6L446.2,444.2L449.8,450.1L449.3,452.2ZM228.7,425.3L231.6,427.7L231.8,430.2L229.7,428.0L228.7,425.3ZM213.7,396.0L218.9,401.1L216.4,402.5L216.0,407.7L212.6,408.2L208.0,403.3L207.6,393.8L210.0,390.2L213.7,396.0ZM366.5,390.6L368.3,389.3L373.2,392.0L372.7,393.0L367.1,392.4L366.5,390.6ZM506.9,387.1L506.1,388.1L506.7,391.3L505.3,392.4L502.6,401.0L500.8,404.7L498.3,406.2L496.9,409.7L498.9,410.6L497.7,412.6L498.5,414.1L493.1,413.6L489.7,416.2L483.8,424.2L481.1,425.9L478.5,424.1L477.3,421.4L479.7,415.3L479.8,412.0L475.8,406.7L480.7,403.9L482.4,398.7L487.8,393.7L500.1,387.4L503.8,387.7L505.5,385.5L506.9,387.1ZM346.7,383.7L352.1,387.7L352.7,391.0L351.3,393.5L345.5,392.5L348.2,392.0L349.7,390.1L348.9,385.8L345.9,384.7L346.7,383.7ZM459.6,386.7L459.8,388.7L462.2,388.3L461.4,390.5L458.6,390.7L457.0,387.2L455.0,388.6L454.0,387.5L454.0,384.8L457.3,383.7L459.6,386.7ZM401.6,372.4L405.4,373.8L407.4,376.4L402.2,377.1L400.9,381.2L398.2,381.3L396.2,378.9L396.0,376.0L397.8,375.4L400.5,377.3L404.0,375.9L401.6,372.4ZM486.2,373.4L486.5,379.3L484.7,380.3L483.8,379.8L485.0,378.9L481.8,377.5L482.7,376.9L480.0,376.9L481.6,373.9L484.6,371.9L485.8,372.4L483.1,374.4L484.2,374.9L486.2,373.4ZM316.3,370.5L322.3,373.4L323.2,375.4L320.9,375.0L316.3,370.5ZM331.1,368.0L335.7,366.6L335.5,367.5L330.5,372.5L329.0,372.4L331.1,368.0ZM295.8,364.6L299.1,363.1L299.8,368.8L296.3,370.5L287.5,371.5L288.3,367.1L287.5,366.6L289.0,364.1L293.1,368.0L295.6,367.7L292.1,363.6L292.7,362.9L295.8,364.6ZM303.3,362.2L306.5,362.7L306.1,364.4L303.3,362.2ZM346.2,371.3L339.4,366.1L340.0,363.2L342.4,361.2L348.2,367.1L346.2,371.3ZM303.3,358.3L301.3,362.1L299.4,361.9L298.4,359.6L300.7,357.6L303.3,358.3ZM349.0,358.5L350.3,356.7L352.1,355.8L352.0,358.3L349.0,358.5ZM453.1,353.1L457.3,356.3L449.4,359.1L444.7,363.6L440.0,362.6L436.9,364.2L435.5,367.6L435.9,369.5L432.8,366.8L433.2,363.3L435.1,362.2L436.6,363.2L440.8,358.0L446.6,354.3L453.1,353.1ZM381.6,350.9L385.5,354.2L381.6,354.3L374.6,361.2L367.6,363.0L366.7,361.2L372.6,360.2L373.6,358.3L372.6,357.3L379.7,353.8L378.5,352.4L381.6,350.9ZM329.8,349.9L327.9,348.7L326.7,346.0L329.3,343.5L330.2,343.5L328.6,348.5L329.8,349.9ZM308.7,344.0L312.1,350.2L309.0,353.4L305.2,343.1L308.7,344.0ZM432.4,350.4L434.8,344.6L432.7,343.6L431.2,340.1L436.6,343.1L435.9,343.5L437.8,346.5L439.2,345.7L439.9,346.8L439.6,350.5L437.0,349.9L436.5,351.6L434.3,351.8L432.4,350.4ZM340.9,343.1L335.8,347.6L331.0,345.6L331.6,342.1L334.0,340.1L332.8,339.8L333.6,338.6L338.6,335.7L337.8,336.9L339.8,337.7L340.2,335.7L341.7,335.7L340.0,340.1L340.9,343.1ZM354.7,332.5L357.5,333.8L358.5,336.4L357.8,345.3L356.2,348.8L350.5,352.4L349.0,348.9L347.0,347.5L346.7,344.0L344.4,340.6L354.7,332.5ZM292.9,337.7L295.4,332.1L298.3,332.0L299.0,337.3L298.3,336.2L297.1,338.7L294.9,336.7L292.9,337.7ZM220.3,325.9L222.0,327.2L222.2,329.1L220.4,329.1L218.4,326.9L220.3,325.9ZM246.0,320.0L241.4,321.6L240.9,323.7L234.1,324.9L239.1,321.0L246.0,320.0ZM289.8,317.1L290.2,315.2L293.6,311.7L293.3,314.7L296.2,317.1L294.0,321.6L289.8,324.4L291.7,320.0L291.3,317.1L289.8,317.1ZM347.4,316.7L342.4,317.1L343.5,313.5L342.4,312.8L342.8,311.7L344.7,310.2L346.4,313.1L347.4,311.3L351.2,313.0L350.9,314.7L347.4,316.7ZM322.1,315.4L323.2,317.8L318.6,320.6L319.0,318.1L317.5,318.1L318.6,316.1L317.8,315.7L319.5,314.5L319.4,310.1L321.3,310.2L322.3,311.9L322.1,315.4ZM239.8,306.8L241.2,308.5L242.6,309.3L240.1,310.1L237.5,309.3L239.8,306.8ZM332.3,306.8L325.1,301.0L324.4,298.0L328.2,298.0L330.2,300.5L339.0,301.9L339.8,304.4L337.3,308.5L332.3,306.8ZM290.2,297.5L291.7,299.7L291.4,301.9L286.7,308.1L284.6,308.6L285.4,300.4L287.5,299.0L287.7,297.7L290.2,297.5ZM401.6,297.5L394.2,305.7L388.5,306.8L384.6,309.4L380.0,309.7L380.2,307.3L385.5,301.0L392.4,301.4L397.1,298.3L401.6,297.5ZM236.9,292.1L244.7,291.7L242.6,297.1L240.2,298.0L238.7,297.1L239.3,295.5L236.9,292.1ZM440.0,294.6L441.0,294.5L440.8,296.0L432.3,298.1L430.1,300.5L426.0,300.5L424.0,297.3L421.0,295.6L414.9,298.2L413.8,293.6L418.2,289.9L426.5,288.3L435.5,293.1L434.3,290.2L437.0,289.7L441.2,291.2L439.3,292.1L440.0,294.6ZM92.5,286.8L96.3,291.9L100.2,294.4L100.7,296.6L95.0,294.1L92.2,296.4L92.3,299.9L90.6,300.0L79.6,287.8L79.6,284.8L83.3,280.1L84.6,280.4L87.1,285.5L92.5,286.8ZM324.8,291.7L322.9,297.5L319.2,291.7L314.9,287.7L314.0,288.2L312.7,284.9L310.6,282.8L309.3,283.7L307.5,279.9L308.1,277.5L312.8,275.1L315.7,277.7L316.7,281.2L322.6,281.8L322.1,286.3L324.4,288.2L322.9,291.2L324.8,291.7ZM236.0,282.3L236.8,279.9L239.4,280.0L241.0,277.5L236.8,278.0L238.7,277.0L237.2,276.0L239.5,276.5L239.9,275.2L242.1,275.2L243.7,278.5L245.2,278.5L243.3,279.4L242.1,282.3L239.3,283.4L236.0,282.3ZM86.0,270.6L79.3,266.5L77.4,266.8L76.5,268.6L73.4,267.2L71.1,261.3L73.4,262.3L69.8,255.4L68.9,256.4L68.7,262.6L66.2,264.2L64.2,262.1L64.6,257.5L66.8,253.7L67.3,249.1L67.7,250.5L68.8,249.1L71.7,253.0L74.6,251.0L74.6,247.1L75.8,247.6L75.0,241.2L76.9,241.2L80.0,250.0L78.5,253.5L80.2,256.7L83.1,254.9L82.7,256.0L89.6,265.7L89.4,270.4L86.0,270.6ZM84.2,247.6L87.3,248.5L86.2,248.5L87.7,252.0L85.2,252.5L83.4,251.0L79.6,240.7L80.5,241.3L81.6,239.2L82.5,239.5L81.9,242.2L84.6,243.2L82.7,248.1L85.0,248.5L84.2,247.6ZM390.5,236.3L389.4,239.9L388.1,240.3L389.9,241.7L389.1,245.2L390.5,253.5L387.7,254.8L387.6,259.2L383.6,260.8L381.9,263.9L379.3,262.8L376.3,258.9L375.1,259.3L375.1,257.4L373.8,257.5L374.4,255.4L379.3,253.5L380.9,250.5L380.7,248.0L378.5,246.1L378.2,242.7L372.5,238.3L371.9,236.2L372.8,233.6L382.2,232.1L384.9,232.9L387.4,236.3L388.6,234.6L390.5,236.3ZM358.3,231.4L360.2,233.7L359.2,236.8L356.7,236.8L356.7,234.8L354.6,232.4L358.3,231.4ZM78.6,230.3L75.4,234.4L76.4,225.7L78.6,219.2L83.3,214.4L85.1,216.3L85.8,219.2L85.7,222.9L83.9,225.8L84.5,226.5L85.4,224.6L85.0,230.3L83.8,229.5L84.2,230.9L81.2,231.6L81.2,233.4L78.6,230.3ZM307.1,217.2L307.5,219.1L306.0,220.1L303.6,219.9L302.8,218.5L300.9,220.6L299.0,218.2L301.3,217.2L300.4,214.7L297.5,214.8L296.0,212.4L293.6,212.4L295.1,210.0L295.0,206.0L296.7,205.0L300.6,207.6L301.6,212.5L307.1,217.2ZM302.1,263.7L301.7,269.1L302.5,270.6L300.9,276.0L295.9,277.8L293.3,273.6L290.8,275.3L291.7,276.5L290.0,277.1L286.8,273.0L287.5,272.1L285.2,268.9L280.6,268.6L281.0,266.2L279.4,265.4L281.0,263.2L279.6,259.5L276.2,259.6L278.3,256.0L277.8,255.0L275.3,256.8L275.6,255.4L274.8,255.4L276.0,253.0L270.6,251.5L272.9,250.0L271.5,246.4L249.5,246.1L247.5,242.2L246.4,242.7L248.7,239.3L247.5,235.2L241.4,232.4L241.0,230.0L238.1,226.7L224.4,215.8L221.1,214.3L217.0,214.6L215.1,212.6L211.4,211.6L210.6,212.4L212.6,213.3L212.1,214.7L203.7,216.3L203.8,214.7L206.1,212.6L215.1,208.9L215.7,207.4L217.9,206.9L218.4,204.5L220.2,203.2L229.9,200.6L233.9,202.9L234.7,206.0L237.0,206.9L240.0,215.2L246.4,218.7L246.4,220.1L253.6,220.7L255.3,223.7L261.2,226.3L273.3,226.6L277.9,228.5L276.2,229.7L276.3,232.3L282.1,237.8L279.7,241.2L279.5,243.7L280.6,245.6L279.5,246.0L283.3,254.2L283.3,258.8L288.5,263.7L291.2,263.4L296.0,265.2L302.1,263.7ZM238.9,194.2L235.2,193.2L235.4,191.9L239.5,188.4L241.8,190.9L238.9,194.2ZM250.6,195.2L246.0,188.8L254.0,193.2L253.8,194.2L257.5,194.8L253.3,198.1L250.0,196.7L250.6,195.2ZM51.9,186.8L55.5,189.2L56.2,190.8L52.6,188.7L51.9,186.8ZM267.3,185.7L263.3,192.1L259.8,193.2L266.8,183.0L267.3,185.7ZM415.6,200.1L414.8,202.8L411.6,202.3L410.4,201.0L410.8,197.7L408.7,195.5L405.8,196.2L412.0,203.0L412.0,204.5L405.1,206.0L390.6,202.0L386.2,197.7L394.0,194.2L397.8,191.0L397.0,189.6L391.8,189.2L384.9,197.1L375.1,193.3L372.0,190.8L373.2,187.8L372.5,187.3L376.7,182.4L377.7,183.9L383.2,183.4L383.9,182.0L384.7,183.0L390.4,180.5L390.5,176.6L401.6,176.6L401.2,178.2L404.7,180.0L402.7,183.8L411.6,191.8L411.1,192.9L415.6,200.1ZM325.9,163.4L327.9,164.7L324.4,170.3L323.9,165.2L325.9,163.4ZM50.0,172.7L51.5,176.6L50.8,177.6L39.9,172.9L40.8,171.7L37.3,170.2L35.3,162.7L30.8,159.3L29.1,155.5L27.0,155.1L26.5,151.9L25.4,152.6L25.2,150.6L23.9,150.2L26.2,146.9L33.6,146.3L36.6,144.7L41.9,147.2L41.1,150.7L36.0,153.3L35.8,155.1L36.9,156.0L36.2,157.0L40.8,159.0L40.6,160.5L39.3,160.5L41.3,169.8L50.0,172.7ZM350.5,129.6L349.7,130.6L350.5,133.0L347.8,134.8L347.0,137.9L344.7,138.9L345.9,139.4L344.3,141.2L346.0,145.3L344.8,147.4L341.8,145.9L341.5,144.3L338.6,142.3L340.9,140.1L339.3,138.0L336.3,139.8L337.9,140.4L335.2,143.3L336.6,143.5L337.3,146.2L333.3,145.3L334.5,142.3L332.8,143.8L332.1,142.3L327.9,143.8L329.0,142.3L327.9,140.9L329.1,137.8L327.1,132.5L337.9,131.6L341.2,135.5L344.7,133.5L346.7,130.6L350.5,129.6ZM362.9,97.4L363.5,102.0L357.0,103.6L350.1,97.8L357.5,95.4L362.9,97.4ZM313.3,79.7L311.7,80.5L313.3,81.6L312.1,84.3L312.9,88.4L311.5,87.9L305.2,91.4L302.1,87.7L298.1,86.5L299.1,80.9L305.2,74.7L310.2,76.2L313.3,79.7ZM466.9,400.8L472.0,400.7L472.1,401.7L466.5,402.5L466.9,400.8ZM447.8,374.0L448.9,376.1L448.5,377.4L444.7,377.3L445.1,375.1L447.8,374.0ZM428.6,335.0L431.0,339.0L429.0,339.5L428.3,338.5L429.1,337.6L427.1,338.0L427.1,336.1L424.6,333.5L426.6,332.2L429.0,333.2L428.6,335.0ZM411.4,319.9L415.3,322.3L413.4,321.7L412.1,323.2L413.1,326.9L411.9,326.7L410.9,325.1L411.4,319.9ZM309.3,301.5L310.7,304.0L309.4,304.1L306.2,303.2L309.3,301.5ZM97.9,228.5L97.7,230.3L93.7,233.5L94.7,230.2L97.9,228.5ZM89.8,227.6L87.5,230.3L89.7,232.5L87.0,230.4L86.2,228.5L88.8,226.9L89.8,227.6ZM272.4,177.8L274.4,180.1L272.7,182.4L271.7,179.2L272.4,177.8Z"/>
+      <g id="dots"></g>
+    </svg>
+    <figcaption class="zlegend"><span><i class="sw" style="background:var(--zA)"></i>Zone A</span><span><i class="sw" style="background:var(--zB)"></i>Zone B</span><span><i class="sw" style="background:var(--zC)"></i>Zone C</span><span><i class="sw" style="background:var(--zD)"></i>Zone D</span></figcaption>
+  </figure>
+</header>
+
+<div class="layout">
+<aside class="controls" aria-label="Design parameters">
+  <fieldset><legend>Use and climate</legend>
+    <div class="row"><label>Building use</label><div class="seg" data-key="use">
+      <button data-v="residential">Home</button><button data-v="office">Office</button><button data-v="hotel">Seasonal hotel</button></div></div>
+    <div class="row"><label>Climate</label><div class="seg" data-key="future">
+      <button data-v="false">Today</button><button data-v="true">2050 (+2 °C)</button></div></div>
+  </fieldset>
+  <fieldset><legend>Form</legend>
+    <div class="row"><label for="area">Floor area</label><output data-for="area"></output><input type="range" id="area" min="150" max="3000" step="50"></div>
+    <div class="row"><label for="floors">Floors</label><output data-for="floors"></output><input type="range" id="floors" min="1" max="6" step="1"></div>
+    <div class="row"><label for="aspect">Length : depth</label><output data-for="aspect"></output><input type="range" id="aspect" min="0.6" max="3" step="0.1"></div>
+    <div class="row"><label for="orient">Main facade faces</label><output data-for="orient"></output><input type="range" id="orient" min="-90" max="90" step="5"></div>
+  </fieldset>
+  <fieldset><legend>Envelope</legend>
+    <div class="row"><label for="wwrMain">Glazing, main facade</label><output data-for="wwrMain"></output><input type="range" id="wwrMain" min="0.1" max="0.8" step="0.05"></div>
+    <div class="row"><label for="wwrOther">Glazing, other facades</label><output data-for="wwrOther"></output><input type="range" id="wwrOther" min="0.1" max="0.5" step="0.05"></div>
+    <div class="row"><label for="g">Glass solar factor (g)</label><output data-for="g"></output><input type="range" id="g" min="0.25" max="0.65" step="0.05"></div>
+    <div class="row"><label>Insulation</label><div class="seg" data-key="insulation">
+      <button data-v="kenak">KENAK min.</button><button data-v="improved">Improved</button><button data-v="nzeb">nZEB+</button></div></div>
+    <div class="row"><label>Thermal mass</label><div class="seg" data-key="mass">
+      <button data-v="light">Light</button><button data-v="medium">Medium</button><button data-v="heavy">Heavy</button></div></div>
+  </fieldset>
+  <fieldset><legend>Passive strategies</legend>
+    <div class="row"><label for="shade">Overhang depth</label><output data-for="shade"></output><input type="range" id="shade" min="0" max="1.2" step="0.1"></div>
+    <label class="check"><input type="checkbox" id="nightVent"> Night ventilation</label>
+    <label class="check"><input type="checkbox" id="hr"> Heat recovery on ventilation</label>
+  </fieldset>
+  <fieldset><legend>Energy system</legend>
+    <div class="row"><label for="roofPV">Roof PV coverage</label><output data-for="roofPV"></output><input type="range" id="roofPV" min="0" max="1" step="0.05"></div>
+    <div class="row"><label for="facadePV">Facade BIPV (opaque main facade)</label><output data-for="facadePV"></output><input type="range" id="facadePV" min="0" max="1" step="0.05"></div>
+    <div class="row"><label for="battery">Battery</label><output data-for="battery"></output><input type="range" id="battery" min="0" max="120" step="5"></div>
+    <div class="row"><label for="pImp">Import price</label><output data-for="pImp"></output><input type="range" id="pImp" min="0.10" max="0.35" step="0.01"></div>
+    <div class="row"><label for="pExp">Net-billing export value</label><output data-for="pExp"></output><input type="range" id="pExp" min="0" max="0.15" step="0.005"></div>
+  </fieldset>
+  <fieldset><legend>Well-being priorities</legend>
+    <p class="hint">Weights for the well-being index. Set them with the people who will use the building.</p>
+    <div class="row"><label for="w_thermal">Thermal comfort</label><output data-for="w_thermal"></output><input type="range" id="w_thermal" min="0" max="5" step="1"></div>
+    <div class="row"><label for="w_daylight">Daylight</label><output data-for="w_daylight"></output><input type="range" id="w_daylight" min="0" max="5" step="1"></div>
+    <div class="row"><label for="w_glare">Freedom from glare</label><output data-for="w_glare"></output><input type="range" id="w_glare" min="0" max="5" step="1"></div>
+    <div class="row"><label for="w_circadian">Morning light</label><output data-for="w_circadian"></output><input type="range" id="w_circadian" min="0" max="5" step="1"></div>
+    <div class="row"><label for="w_view">View out</label><output data-for="w_view"></output><input type="range" id="w_view" min="0" max="5" step="1"></div>
+    <div class="row"><label for="w_air">Fresh-air hours</label><output data-for="w_air"></output><input type="range" id="w_air" min="0" max="5" step="1"></div>
+    <div class="row"><label for="w_qualitative">Qualitative score</label><output data-for="w_qualitative"></output><input type="range" id="w_qualitative" min="0" max="5" step="1"></div>
+  </fieldset>
+  <fieldset><legend>Qualitative assessment</legend>
+    <p class="hint">Your team's 1–5 judgement. It is kept separate from the simulated indicators.</p>
+    <div class="row"><label for="q_bio">Connection to nature</label><output data-for="q_bio"></output><input type="range" id="q_bio" min="1" max="5" step="1"></div>
+    <div class="row"><label for="q_control">Occupant control</label><output data-for="q_control"></output><input type="range" id="q_control" min="1" max="5" step="1"></div>
+    <div class="row"><label for="q_delight">Spatial and thermal delight</label><output data-for="q_delight"></output><input type="range" id="q_delight" min="1" max="5" step="1"></div>
+  </fieldset>
+  <div class="actions" style="padding:12px 0"><button class="btn ghost" id="reset">Reset to reference design</button></div>
+</aside>
+
+<main>
+  <div class="headline">
+    <div><div class="big" id="ssBig">–<small>%</small></div><div class="biglabel">of the building's electricity met on site, hour by hour</div></div>
+    <div class="kpis" id="kpis"></div>
+  </div>
+
+  <section class="card">
+    <h2>When the building runs on its own sun</h2>
+    <p class="sub">Average daily balance of solar generation minus demand, for each hour of each month. Gold hours export surplus; blue hours draw from the battery or the grid.</p>
+    <div class="scroll"><svg id="carpet" role="img" aria-label="Hourly energy balance by month" viewBox="0 0 760 300" width="100%" style="min-width:560px"></svg></div>
+    <div class="legend"><span>Deficit</span><span class="ramp"></span><span>Surplus</span><span id="carpetScale"></span></div>
+  </section>
+
+  <div class="grid2">
+    <section class="card">
+      <h2>Month by month</h2>
+      <p class="sub">Monthly demand, solar generation and what still comes from the grid.</p>
+      <svg id="monthly" role="img" aria-label="Monthly load, PV and grid import" viewBox="0 0 440 240" width="100%"></svg>
+      <div class="legend"><span><i class="sw" style="background:var(--ink)"></i>Demand</span><span><i class="sw" style="background:var(--sun)"></i>Solar</span><span><i class="sw" style="background:var(--deficit)"></i>Grid import</span></div>
+    </section>
+    <section class="card">
+      <h2>Well-being</h2>
+      <div class="wbtotal"><b id="wbIndex">–</b><span class="sub" style="margin:0">weighted index, 0–100</span></div>
+      <div id="wbBars"></div>
+    </section>
+  </div>
+
+  <section class="card">
+    <h2>Explore the trade-off</h2>
+    <p class="sub">Generate hundreds of design variants around your current settings (same use, climate, size and weights), find the Pareto front, and train a fast surrogate model on the results. Select any point to load that design.</p>
+    <div class="actions"><button class="btn" id="sample">Generate 300 variants</button><span class="pill" id="sampleStatus">Not run yet</span></div>
+    <div class="grid2" style="margin-top:14px">
+      <svg id="scatter" role="img" aria-label="Self-sufficiency versus well-being for sampled designs" viewBox="0 0 440 320" width="100%"></svg>
+      <div id="surr"><p class="sub">The surrogate panel appears after sampling.</p></div>
+    </div>
+    <div class="legend"><span><i class="sw" style="background:var(--muted);opacity:.5"></i>Sampled design</span><span><i class="sw" style="background:var(--sea)"></i>Pareto-optimal</span><span><i class="sw" style="background:var(--warn)"></i>Your design</span></div>
+  </section>
+
+  <section class="card">
+    <h2>Compare scenarios</h2>
+    <p class="sub">Save the current design, change it, and save again. Scenarios are kept in this browser only.</p>
+    <div class="actions"><button class="btn" id="save">Save current design</button><button class="btn ghost" id="clear">Clear all</button></div>
+    <div class="scroll" style="margin-top:12px"><table id="cmp"></table></div>
+  </section>
+
+  <section class="card" id="method">
+    <h2>About the method</h2>
+    <p class="sub">Self-sufficiency is the share of electricity demand met on site in the same hour it is needed, after the battery. Unlike an annual net-zero balance, it shows how much the building still depends on the grid at night and in winter. Self-consumption is the share of solar output used in the building rather than exported, which matters under Greece's net-billing scheme.</p>
+    <p class="sub">Well-being combines passive thermal comfort (EN 16798-1 adaptive range, without mechanical cooling or heating), daylight, freedom from glare, morning melanopic light (CIE S 026), view out (EN 17037), fresh-air hours and your team's qualitative scores. The weights are yours to set.</p>
+    <p class="sub">Why it matters now: under the 2024 EU buildings directive (EPBD recast), new buildings must be zero-emission from 2030 (public buildings from 2028), solar installations become mandatory on new buildings, and indoor environmental quality becomes a legal objective. The question shifts from whether to install PV to how to use it well while keeping occupants healthy.</p>
+  </section>
+  <div class="printsum" id="printsum"></div>
+  <div class="minibar" aria-live="polite"><span>Self-sufficiency</span><b id="mbSS">–</b><span>Well-being</span><b id="mbWB">–</b></div>
+  <p class="note"><b>Research and tool:</b> Marko Nika, <i>Energy Autonomy and Human Well-Being in Greek Buildings</i> (2026). <a href="paper.pdf">Read the paper (PDF)</a>.<br><br><b>About this model.</b> This is a reduced-order demonstrator of the research method, not a certified calculation. Weather for each of the 69 locations is synthesised from approximate monthly climate normals with day-to-day variability; heating degree days match published values for the zone reference cities within −8% to +3%. KENAK zones follow the official prefecture table (TOTEE 20701-3, 2017 revision). Heat flows use a single-zone 1R1C model with ideal heat pumps; passive comfort uses the same model free-running with window and night ventilation against the EN 16798-1 adaptive range. Daylight, glare, morning (melanopic) light and view are simplified proxies of EN 17037 and CIE S 026 metrics. U-values for "KENAK min." approximate the 2017 zone limits. The 2050 case is a uniform +1.8 °C (winter) to +2.5 °C (summer) shift. The seasonal hotel operates April–October with a winter frost setback. Battery dispatch is rule-based (use, then store, then export). Verify any design decision with EnergyPlus/Radiance simulation.</p>
+</div>
+</div>
+<script>
+// Greek locations: [key, name, region, KENAK zone, lat, lon, Tjan, Tjul, type]
+// type: i=island, c=coastal mainland, n=inland lowland, m=mountain/high inland
+// Monthly normals are approximate long-term values for indicative modelling only.
+const CITY_TABLE=[
+['heraklion','Heraklion','Crete','A',35.34,25.13,12.3,26.8,'i'],
+['chania','Chania','Crete','A',35.51,24.02,11.9,26.5,'i'],
+['rethymno','Rethymno','Crete','A',35.37,24.47,12.4,26.3,'i'],
+['agiosnikolaos','Agios Nikolaos','Crete','A',35.19,25.72,12.8,27.2,'i'],
+['ierapetra','Ierapetra','Crete','A',35.01,25.74,13.2,27.8,'i'],
+['sitia','Sitia','Crete','A',35.21,26.10,12.8,26.6,'i'],
+['rhodes','Rhodes','Dodecanese','A',36.43,28.22,12.5,26.8,'i'],
+['kos','Kos','Dodecanese','A',36.89,27.29,12.0,27.0,'i'],
+['karpathos','Karpathos','Dodecanese','A',35.51,27.21,13.0,26.5,'i'],
+['tilos','Tilos','Dodecanese','A',36.43,27.37,12.3,26.8,'i'],
+['astypalaia','Astypalaia','Dodecanese','A',36.55,26.35,12.0,25.5,'i'],
+['syros','Syros (Ermoupoli)','Cyclades','A',37.44,24.94,11.9,25.5,'i'],
+['naxos','Naxos','Cyclades','A',37.10,25.38,12.0,25.3,'i'],
+['paros','Paros','Cyclades','A',37.08,25.15,12.0,25.3,'i'],
+['mykonos','Mykonos','Cyclades','A',37.45,25.33,11.8,25.2,'i'],
+['santorini','Santorini','Cyclades','A',36.42,25.43,12.2,25.5,'i'],
+['milos','Milos','Cyclades','A',36.73,24.43,12.3,25.6,'i'],
+['samos','Samos','North & East Aegean','A',37.75,26.98,10.8,27.0,'i'],
+['ikaria','Ikaria','North & East Aegean','A',37.62,26.17,11.5,25.5,'i'],
+['chios','Chios','North & East Aegean','B',38.37,26.14,10.7,26.9,'i'],
+['mytilene','Mytilene (Lesvos)','North & East Aegean','B',39.11,26.55,10.1,26.6,'i'],
+['lemnos','Myrina (Lemnos)','North & East Aegean','B',39.87,25.06,8.2,24.9,'i'],
+['skiathos','Skiathos','Sporades','B',39.16,23.49,9.5,25.8,'i'],
+['corfu','Corfu','Ionian Islands','B',39.62,19.92,10.1,26.6,'i'],
+['paxos','Paxos','Ionian Islands','B',39.20,20.18,10.8,26.3,'i'],
+['lefkada','Lefkada','Ionian Islands','B',38.83,20.71,10.5,26.5,'i'],
+['argostoli','Argostoli (Kefalonia)','Ionian Islands','A',38.18,20.49,11.4,26.3,'i'],
+['ithaca','Ithaca','Ionian Islands','A',38.37,20.72,11.2,26.0,'i'],
+['zakynthos','Zakynthos','Ionian Islands','A',37.78,20.90,11.6,26.8,'i'],
+['kythira','Kythira','Ionian Islands','A',36.15,22.99,11.4,25.3,'i'],
+['aegina','Aegina','Saronic Islands','A',37.75,23.43,11.0,28.0,'i'],
+['athens','Athens','Attica','B',37.98,23.73,9.9,29.3,'c'],
+['piraeus','Piraeus','Attica','B',37.94,23.65,10.8,27.7,'c'],
+['patras','Patras','Peloponnese','B',38.25,21.73,10.3,27.0,'c'],
+['corinth','Corinth','Peloponnese','B',37.94,22.93,10.2,27.5,'c'],
+['pyrgos','Pyrgos','Peloponnese','B',37.68,21.44,10.3,26.9,'c'],
+['nafplio','Nafplio','Peloponnese','A',37.57,22.80,10.5,27.8,'c'],
+['kalamata','Kalamata','Peloponnese','A',37.04,22.11,11.0,27.5,'c'],
+['sparti','Sparti','Peloponnese','A',37.07,22.43,9.3,28.3,'n'],
+['tripoli','Tripoli','Peloponnese','C',37.51,22.37,5.3,24.5,'m'],
+['lamia','Lamia','Central Greece','B',38.90,22.43,7.8,28.0,'n'],
+['chalkida','Chalkida','Central Greece','B',38.46,23.60,9.5,27.8,'c'],
+['livadeia','Livadeia','Central Greece','B',38.44,22.88,7.3,27.0,'n'],
+['karpenisi','Karpenisi','Central Greece','C',38.91,21.80,2.4,21.7,'m'],
+['volos','Volos','Thessaly','B',39.36,22.94,8.7,27.6,'c'],
+['larissa','Larissa','Thessaly','C',39.64,22.42,5.2,27.6,'n'],
+['trikala','Trikala','Thessaly','C',39.56,21.77,5.5,26.6,'n'],
+['karditsa','Karditsa','Thessaly','C',39.36,21.92,5.8,26.8,'n'],
+['ioannina','Ioannina','Epirus','C',39.66,20.85,4.9,24.8,'m'],
+['preveza','Preveza','Epirus','B',38.96,20.75,10.2,26.4,'c'],
+['arta','Arta','Epirus','B',39.16,20.99,9.3,26.5,'n'],
+['igoumenitsa','Igoumenitsa','Epirus','B',39.50,20.27,9.0,26.3,'c'],
+['agrinio','Agrinio','Western Greece','B',38.62,21.41,8.9,27.3,'n'],
+['thessaloniki','Thessaloniki','Macedonia','C',40.64,22.94,5.8,27.0,'c'],
+['katerini','Katerini','Macedonia','C',40.27,22.50,5.5,25.8,'n'],
+['veria','Veria','Macedonia','C',40.52,22.20,4.8,25.8,'n'],
+['edessa','Edessa','Macedonia','C',40.80,22.05,3.8,24.3,'m'],
+['kilkis','Kilkis','Macedonia','C',40.99,22.87,3.8,25.8,'n'],
+['serres','Serres','Macedonia','C',41.09,23.55,4.3,26.6,'n'],
+['polygyros','Polygyros (Chalkidiki)','Macedonia','C',40.38,23.44,6.3,25.8,'c'],
+['kavala','Kavala','Macedonia','C',40.94,24.41,6.2,26.0,'c'],
+['drama','Drama','Macedonia','D',41.15,24.15,3.4,25.5,'n'],
+['kozani','Kozani','Macedonia','D',40.30,21.79,1.8,23.8,'m'],
+['kastoria','Kastoria','Macedonia','D',40.52,21.26,1.6,22.9,'m'],
+['florina','Florina','Macedonia','D',40.78,21.41,0.8,22.6,'m'],
+['grevena','Grevena','Macedonia','D',40.08,21.43,1.9,23.5,'m'],
+['xanthi','Xanthi','Thrace','C',41.13,24.89,4.3,25.6,'n'],
+['komotini','Komotini','Thrace','C',41.12,25.41,4.3,26.0,'n'],
+['alexandroupoli','Alexandroupoli','Thrace','C',40.85,25.87,5.2,26.1,'c']
+];
+const SHAPE={i:[0,.014,.117,.324,.586,.862,1,1,.821,.572,.338,.124],
+             c:[0,.026,.155,.345,.603,.861,1,.985,.778,.515,.273,.077],
+             n:[0,.06,.2,.4,.64,.87,1,.99,.78,.52,.27,.07],
+             m:[0,.096,.252,.459,.683,.881,1,.991,.780,.532,.275,.064]};
+const AMP={i:[6,8],c:[7,10.5],n:[9,13],m:[9,14]};
+const H_S=[2.4,3.2,4.5,5.9,7.0,7.9,7.9,7.1,5.8,4.1,2.9,2.2], H_N=[1.8,2.6,3.8,5.1,6.4,7.2,7.3,6.5,4.9,3.2,2.0,1.6];
+function buildCities(){
+  const out={};
+  for(const [key,name,region,zone,lat,lon,tj,tjul,type] of CITY_TABLE){
+    const sh=SHAPE[type], T=sh.map(s=>+(tj+s*(tjul-tj)).toFixed(1));
+    const [aw,as]=AMP[type], A=sh.map(s=>+(aw+s*(as-aw)).toFixed(1));
+    const f=Math.max(0,Math.min(1,(lat-35.3)/(40.7-35.3)));
+    const ionian=region==='Ionian Islands'&&lon<21.2;
+    const H=H_S.map((v,m)=>{let h=v+(H_N[m]-v)*f;
+      if(type==='i')h*=1.02; if(type==='m'&&(m<3||m>9))h*=0.96; if(ionian&&(m<2||m>9))h*=0.94; return +h.toFixed(2);});
+    out[key]={name,region,zone,lat,lon,type,T,A,H};
+  }
+  return out;
+}
+
+// Reduced-order hourly energy-autonomy & well-being model for Greek buildings.
+// Indicative only: 1R1C thermal model, synthetic hourly climate from monthly means.
+const ENGINE = (function(){
+const CITIES = buildCities();
+// approx. KENAK-2017 U-value limits by zone [wall, roof, window] W/m2K
+const KENAK_U = {A:[0.60,0.45,3.0],B:[0.50,0.40,2.8],C:[0.45,0.35,2.6],D:[0.40,0.30,2.4]};
+const DAYS=[31,28,31,30,31,30,31,31,30,31,30,31];
+const MASS={light:80e3,medium:165e3,heavy:260e3}; // J/m2K
+const USES={
+  residential:{people:2,equip:2,base:1.0,lpd:4,dhw:20,heat:20,cool:26,
+    occ:h=>h<7?1:h<9?0.7:h<17?0.35:h<23?0.9:1, hvac:(h,wd,s)=>h>=6&&h<23, season:m=>1, awake:h=>h>=7&&h<23},
+  office:{people:6,equip:10,base:1.5,lpd:8,dhw:3,heat:21,cool:25,
+    occ:(h,wd)=>wd&&h>=8&&h<18?1:0, hvac:(h,wd)=>wd&&h>=7&&h<18, season:m=>1, awake:h=>true},
+  hotel:{people:2.5,equip:3,base:1.2,lpd:6,dhw:45,heat:21,cool:25,
+    occ:h=>h<9?0.9:h<17?0.3:0.85, hvac:(h,wd,s)=>s>0.2, season:m=>[0.1,0.1,0.15,0.4,0.65,0.85,0.95,0.95,0.8,0.45,0.1,0.1][m], awake:h=>h>=7}
+};
+function rng(seed){let s=seed>>>0;return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};}
+function gauss(r){let u=r()||1e-9,v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+const cache={};
+function seedOf(k){let h=7;for(const c of k)h=(h*31+c.charCodeAt(0))>>>0;return h;}
+function climate(cityKey,future){
+  const key=cityKey+(future?'F':'C'); if(cache[key])return cache[key];
+  const c=CITIES[cityKey], lat=c.lat*Math.PI/180, r=rng(seedOf(cityKey));
+  const N=8760, Te=new Float64Array(N), G=new Float64Array(N), Dh=new Float64Array(N),
+    alt=new Float64Array(N), az=new Float64Array(N), month=new Uint8Array(N), wd=new Uint8Array(N), hr=new Uint8Array(N);
+  let t=0, doy=0;
+  for(let m=0;m<12;m++){
+    const dT=future?(m>=4&&m<=8?2.5:1.8):0;
+    // daily clearness perturbations, renormalised to keep monthly mean
+    const sig=[.3,.28,.24,.18,.12,.08,.06,.06,.1,.2,.28,.3][m];
+    let f=[];for(let d=0;d<DAYS[m];d++)f.push(Math.max(0.15,1+sig*gauss(r)));
+    const fm=f.reduce((a,b)=>a+b)/f.length; f=f.map(x=>x/fm);
+    const tdev=[];for(let d=0;d<DAYS[m];d++)tdev.push(1.8*gauss(r));
+    for(let d=0;d<DAYS[m];d++,doy++){
+      const decl=23.45*Math.PI/180*Math.sin(2*Math.PI*(284+doy+1)/365);
+      const E0=1367*(1+0.033*Math.cos(2*Math.PI*(doy+1)/365));
+      // daily extraterrestrial horizontal (Wh/m2)
+      const ws=Math.acos(Math.max(-1,Math.min(1,-Math.tan(lat)*Math.tan(decl))));
+      const H0=24/Math.PI*E0*(Math.cos(lat)*Math.cos(decl)*Math.sin(ws)+ws*Math.sin(lat)*Math.sin(decl));
+      let Kt=Math.min(0.78,c.H[m]*1000/H0*f[d]);
+      // cloudier days are also cooler amplitude
+      const amp=(c.A[m]+(future?0.5:0))*(0.6+0.4*Math.min(1.3,f[d]));
+      const kd = Kt<=0.22?1-0.09*Kt:Kt<=0.8?0.9511-0.1604*Kt+4.388*Kt*Kt-16.638*Kt**3+12.336*Kt**4:0.165;
+      for(let h=0;h<24;h++,t++){
+        const w=(h+0.5-12)*15*Math.PI/180;
+        const sa=Math.sin(lat)*Math.sin(decl)+Math.cos(lat)*Math.cos(decl)*Math.cos(w);
+        const a=Math.asin(Math.max(-1,Math.min(1,sa)));
+        let zc=(Math.sin(decl)-Math.sin(a)*Math.sin(lat))/(Math.cos(a)*Math.cos(lat));
+        let A=Math.acos(Math.max(-1,Math.min(1,zc))); if(w<0)A=-A; // 0=south, negative east
+        alt[t]=a; az[t]=A;
+        const g=sa>0?E0*sa*Kt:0; G[t]=g; Dh[t]=g*kd;
+        Te[t]=c.T[m]+dT+tdev[d]+amp/2*Math.cos(2*Math.PI*(h-15)/24);
+        month[t]=m; hr[t]=h; wd[t]=((doy%7)<5)?1:0;
+      }
+    }
+  }
+  // running mean outdoor temperature (EN 16798-1, alpha 0.8) on daily means
+  const Trm=new Float64Array(N); let prev=null, rm=0;
+  for(let d=0;d<365;d++){ let s=0; for(let h=0;h<24;h++)s+=Te[d*24+h]; const dm=s/24;
+    rm = prev===null? dm : 0.8*rm+0.2*prev; prev=dm; for(let h=0;h<24;h++)Trm[d*24+h]=rm; }
+  const Tann=Te.reduce((a,b)=>a+b)/N;
+  return cache[key]={Te,G,Dh,alt,az,month,wd,hr,Trm,Tann,city:c};
+}
+// irradiance on a plane (tilt beta rad, azimuth gam rad, 0=south, +west)
+function poa(cl,t,beta,gam){
+  const g=cl.G[t]; if(g<=0)return {tot:0,beam:0,cos:0};
+  const a=cl.alt[t], A=cl.az[t], dh=cl.Dh[t], bh=g-dh;
+  const cosi=Math.sin(a)*Math.cos(beta)+Math.cos(a)*Math.sin(beta)*Math.cos(A-gam);
+  const dni=bh/Math.max(0.087,Math.sin(a));
+  const beam=Math.max(0,dni*cosi);
+  return {tot:beam+dh*(1+Math.cos(beta))/2+g*0.2*(1-Math.cos(beta))/2, beam, cos:cosi, dif:dh*(1+Math.cos(beta))/2};
+}
+function simulate(p){
+  const cl=climate(p.city,p.future), use=USES[p.use], zone=cl.city.zone, N=8760;
+  const floors=p.floors, Af=p.area/floors, D=Math.sqrt(Af/p.aspect), W=Af/D, hF=3.2, Ht=floors*hF, V=p.area*hF*0.9;
+  const rot=p.orient*Math.PI/180;
+  // facades: long main (faces rot), long back (rot+180), short sides
+  const fac=[{az:rot,len:W,wwr:p.wwrMain,main:true},{az:rot+Math.PI,len:W,wwr:p.wwrOther},
+             {az:rot-Math.PI/2,len:D,wwr:p.wwrOther},{az:rot+Math.PI/2,len:D,wwr:p.wwrOther}];
+  const lvl=p.insulation, base=KENAK_U[zone];
+  const U = lvl==='kenak'?base: lvl==='improved'?base.map(x=>x*0.6):[0.2,0.15,1.1];
+  let Awin=0,Aop=0; fac.forEach(f=>{f.A=f.len*Ht; f.Aw=f.A*f.wwr; Awin+=f.Aw; Aop+=f.A-f.Aw;}); const Afac=Awin+Aop;
+  const main=fac[0], Abipv=(main.A-main.Aw)*p.facadePV;
+  const Hwall=U[0]*Aop*1.1, Hroof=U[1]*Af, Hwin=U[2]*Awin, Hgf=U[1]*1.2*Af*0.5;
+  const Htr=Hwall+Hroof+Hwin, Hinf=0.34*0.4*V, Hmv=0.34*0.5*V*(p.hr?0.25:1);
+  const C=MASS[p.mass]*p.area, dt=3600, Cd=C/dt;
+  const winH=1.8, fr=0.75;
+  // daylight: BRE average daylight factor on a representative floor
+  const Aw_floor=Awin/floors, Asurf=2*(Af+W*hF+D*hF);
+  const ADF=(0.7*Aw_floor*fr*70*0.9)/(Asurf*(1-0.5*0.5));
+  const headH=2.4, reach=2.2*headH*Math.min(1,(p.wwrMain+p.wwrOther)/0.6);
+  const daylitFrac=Math.min(1,(2*reach)/D)*Math.min(1,ADF/3);
+  // PV
+  const Aroof=Af*0.85*p.roofPV, effR=0.20, effF=0.17, PR=0.86;
+  const kWp=(Aroof*effR+Abipv*effF);
+  const tilt=15*Math.PI/180;
+  const cap=p.battery, socMin=0.1*cap, etaC=0.95, etaD=0.95;
+  // outputs
+  const load=new Float64Array(N), pv=new Float64Array(N), imp=new Float64Array(N), exp=new Float64Array(N);
+  let Ti=20, Tif=20, soc=cap*0.5, heat=0, cool=0, light=0, plug=0, dhwE=0;
+  let occH=0, comfH=0, hotH=0, coldH=0, glareH=0, dayOccH=0, circDays=0, nvH=0, nvOk=0;
+  let dayCirc=0;
+  const Arm=1;
+  for(let t=0;t<N;t++){
+    const h=cl.hr[t], m=cl.month[t], wdk=cl.wd[t], Te=cl.Te[t], s=use.season(m);
+    const occ=use.occ(h,wdk)*s;
+    // solar gains + glare
+    let Qs=0, glare=0;
+    for(const f of fac){ if(f.Aw<=0)continue; const r=poa(cl,t,Math.PI/2,f.az);
+      let sh=0;
+      if(r.beam>0&&p.shade>0){const tp=Math.tan(cl.alt[t])/Math.max(0.05,r.cos); sh=Math.min(1,p.shade*tp/winH);}
+      const Ib=r.beam*(1-sh), Id=(r.tot-r.beam)*(1-0.25*Math.min(1,p.shade));
+      Qs+=(Ib+Id)*f.Aw*fr*p.g;
+      if(Ib>100&&cl.alt[t]<0.6&&occ>0.2&&use.awake(h))glare+=Math.min(1,f.Aw/(Afac*0.3)); }
+    const Qint=((use.people+use.equip)*occ+use.base)*p.area;
+    // lighting
+    const Eext=110*cl.Dh[t]+ (cl.G[t]>0?20*(cl.G[t]-cl.Dh[t]):0);
+    const avail=Math.min(1,Eext*ADF/100/300);
+    const Lf=use.awake(h)&&occ>0.05? occ*(1-daylitFrac*avail):0;
+    const Plight=use.lpd*p.area*Lf;
+    const Pplug=(use.equip*occ+use.base)*p.area;
+    // DHW (thermal kWh/m2yr -> hourly), heat pump COP 3
+    const dhwProf=[.02,.01,.01,.01,.01,.03,.08,.1,.07,.05,.04,.04,.04,.03,.03,.03,.04,.05,.07,.08,.07,.05,.03,.02][h];
+    const sAvg=use===USES.hotel?0.47:1;
+    const Pdhw=use.dhw*p.area*1000/365*dhwProf*(s/sAvg)/3;
+    const Qg=Qs+Qint+Plight*0.9;
+    // night ventilation (conditioned run)
+    const hvacOn=use.hvac(h,wdk,s);
+    let Hve=Hinf+ (occ>0||hvacOn?Hmv:0);
+    let Hnv=0;
+    if(p.nightVent&&!hvacOn&&Ti>22&&Te<Ti-2)Hnv=0.34*4*V;
+    const H=Htr+Hve+Hnv+Hgf;
+    const Tg=cl.Tann;
+    const num=Cd*Ti+Qg+(Htr+Hve+Hnv)*Te+Hgf*Tg;
+    let Tn=num/(Cd+H), Q=0;
+    const Th=hvacOn?use.heat:(use===USES.hotel?12:16), Tc=hvacOn?use.cool:99;
+    if(Tn<Th){Q=(Cd+H)*Th-num;Tn=Th;heat+=Q/1000;}
+    else if(Tn>Tc){Q=(Cd+H)*Tc-num;Tn=Tc;cool+=-Q/1000;}
+    Ti=Tn;
+    const cop=Math.min(4.2,Math.max(1.8,2.5+0.06*Te)), eer=Math.min(5.5,Math.max(2.2,5.2-0.07*(Te-20)));
+    const Phvac=Q>0?Q/cop:(-Q)/eer;
+    const L=(Phvac+Plight+Pplug+Pdhw)/1000; load[t]=L;
+    light+=Plight/1000; plug+=Pplug/1000; dhwE+=Pdhw/1000;
+    // free-running run for passive comfort
+    let Hnvf=0, open=false;
+    if((p.nightVent&&(h>=22||h<7)&&Tif>22&&Te<Tif-1)){Hnvf=0.34*4*V;}
+    if(occ>0.2&&Tif>24&&Te<Tif-1&&Te>16){Hnvf=Math.max(Hnvf,0.34*3*V);open=true;}
+    const Hf=Htr+Hinf+Hmv*0.5+Hnvf+Hgf;
+    Tif=(Cd*Tif+Qg+(Htr+Hinf+Hmv*0.5+Hnvf)*Te+Hgf*Tg)/(Cd+Hf);
+    if(occ>0.3){ occH++;
+      const trm=cl.Trm[t]; let lo,hi;
+      if(trm>=10&&trm<=30){const tc=0.33*trm+18.8;lo=tc-4;hi=tc+3;} else {lo=20;hi=26;}
+      if(Tif>=lo&&Tif<=hi)comfH++; else if(Tif>hi)hotH++; else coldH++;
+      if(Te>=16&&Te<=26)nvOk++;
+      glareH+=glare;
+    }
+    // circadian: morning 8-12, eye-level vertical illuminance near facade
+    if(h===8)dayCirc=0;
+    if(h>=8&&h<12&&occ>0.2&&use.awake(h)){
+      const Ev=110*cl.Dh[t]*ADF/100*0.4*0.9; if(Ev>=250)dayCirc++; }
+    if(h===12){ const any=(use.occ(10,wdk)*s)>0.2; if(any){dayOccH++; if(dayCirc>=3)circDays++;} }
+    // PV
+    const r=poa(cl,t,tilt,0), rf=poa(cl,t,Math.PI/2,main.az);
+    const tcR=Te+0.03*r.tot, tcF=Te+0.035*rf.tot;
+    const G=(Aroof*effR*r.tot*(1-0.004*(tcR-25))+Abipv*effF*rf.tot*(1-0.004*(tcF-25)))*PR/1000;
+    pv[t]=Math.max(0,G);
+    // dispatch (rule-based)
+    let net=pv[t]-L;
+    if(net>=0){const ch=Math.min(net,(cap-soc)/etaC); soc+=ch*etaC; exp[t]=net-ch;}
+    else{const dis=Math.min(-net,(soc-socMin)*etaD); soc-=dis/etaD; imp[t]=-net-dis;}
+  }
+  const sum=a=>a.reduce((x,y)=>x+y,0);
+  const Ltot=sum(load), PVt=sum(pv), I=sum(imp), E=sum(exp);
+  const SS=(Ltot-I)/Ltot, SC=PVt>0?(PVt-E)/PVt:0;
+  // storage autonomy: usable kWh / mean night (18-06) hourly load
+  let nl=0,nc=0; for(let t=0;t<N;t++){const h=cl.hr[t]; if(h>=18||h<6){nl+=load[t];nc++;}}
+  const autH=cap*0.9*etaD/(nl/nc);
+  // well-being scores 0-100
+  const thermal=100*comfH/Math.max(1,occH);
+  const daylight=Math.min(100,100*daylitFrac);
+  const glareS=100*(1-Math.min(1,glareH/Math.max(1,occH)/0.25));
+  const circ=100*circDays/Math.max(1,dayOccH);
+  const wmain=p.wwrMain; const view=Math.min(100,wmain>=0.4?100:wmain>=0.25?70+30*(wmain-0.25)/0.15:wmain>=0.15?40+30*(wmain-0.15)/0.1:wmain/0.15*40);
+  const air=100*nvOk/Math.max(1,occH);
+  // monthly & carpet (month x hour) balance
+  const carpet=[...Array(12)].map(()=>new Array(24).fill(0)), mLoad=new Array(12).fill(0), mPV=new Array(12).fill(0), mImp=new Array(12).fill(0);
+  for(let t=0;t<N;t++){const m=cl.month[t],h=cl.hr[t];carpet[m][h]+=(pv[t]-load[t])/DAYS[m];mLoad[m]+=load[t];mPV[m]+=pv[t];mImp[m]+=imp[t];}
+  return {SS,SC,Ltot,PVt,I,E,kWp,autH,heat,cool,light,plug,dhw:dhwE,
+    hvacE:Ltot-light-plug-dhwE, eui:Ltot/p.area,
+    wb:{thermal,daylight,glare:glareS,circadian:circ,view,air},
+    hotH,coldH,occH,ADF,carpet,mLoad,mPV,mImp,Abipv,Aroof,Awin,zone};
+}
+function wbIndex(wb,q,w){
+  const parts=[['thermal',wb.thermal],['daylight',wb.daylight],['glare',wb.glare],['circadian',wb.circadian],['view',wb.view],['air',wb.air],['qualitative',q]];
+  let s=0,ws=0; for(const [k,v] of parts){s+=v*w[k];ws+=w[k];} return ws>0?s/ws:0;
+}
+return {CITIES,USES,KENAK_U,simulate,wbIndex,climate};
+})();
+
+
+// Latin hypercube sampling + quadratic ridge surrogate (shared with the web tool)
+const SUR=(function(){
+const PARAMS=[
+ {k:'aspect',min:0.6,max:3},{k:'orient',min:-60,max:60},{k:'wwrMain',min:0.1,max:0.8},{k:'wwrOther',min:0.1,max:0.5},
+ {k:'shade',min:0,max:1.2},{k:'g',min:0.25,max:0.65},{k:'ins',min:0,max:2},{k:'massI',min:0,max:2},
+ {k:'nv',min:0,max:1},{k:'roofPV',min:0.2,max:1},{k:'facadePV',min:0,max:1},{k:'battery',min:0,max:40}];
+function rng(seed){let s=seed>>>0;return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};}
+function lhs(n,seed){const r=rng(seed);const cols=PARAMS.map(()=>{const a=[...Array(n).keys()].map(i=>(i+r())/n);for(let i=n-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;});
+  return [...Array(n).keys()].map(i=>PARAMS.map((p,j)=>cols[j][i]));}
+function toDesign(u,base){const d={...base};PARAMS.forEach((p,j)=>{d[p.k]=p.min+u[j]*(p.max-p.min);});
+  d.insulation=['kenak','improved','nzeb'][Math.min(2,Math.floor(u[6]*3))];d.mass=['light','medium','heavy'][Math.min(2,Math.floor(u[7]*3))];d.nightVent=u[8]>0.5;return d;}
+function feats(u){const f=[1,...u];for(let i=0;i<u.length;i++)for(let j=i;j<u.length;j++)f.push(u[i]*u[j]);return f;}
+function ridge(X,y,lam){const p=X[0].length;const A=[...Array(p)].map(()=>new Float64Array(p+1));
+  for(let r=0;r<X.length;r++){const x=X[r];for(let i=0;i<p;i++){const xi=x[i];for(let j=0;j<p;j++)A[i][j]+=xi*x[j];A[i][p]+=xi*y[r];}}
+  for(let i=1;i<p;i++)A[i][i]+=lam;
+  for(let c=0;c<p;c++){let m=c;for(let r=c+1;r<p;r++)if(Math.abs(A[r][c])>Math.abs(A[m][c]))m=r;[A[c],A[m]]=[A[m],A[c]];
+    const pv=A[c][c]||1e-12;for(let r=0;r<p;r++){if(r===c)continue;const f=A[r][c]/pv;if(!f)continue;for(let k=c;k<=p;k++)A[r][k]-=f*A[c][k];}}
+  return A.map((row,i)=>row[p]/(row[i]||1e-12));}
+const pred=(w,x)=>x.reduce((s,v,i)=>s+v*w[i],0);
+function r2(y,yh){const m=y.reduce((a,b)=>a+b)/y.length;let ss=0,st=0;y.forEach((v,i)=>{ss+=(v-yh[i])**2;st+=(v-m)**2;});return 1-ss/st;}
+function rmse(y,yh){return Math.sqrt(y.reduce((s,v,i)=>s+(v-yh[i])**2,0)/y.length);}
+function pareto(pts){ // maximise both a,b
+  return pts.filter(p=>!pts.some(q=>q!==p&&q.a>=p.a&&q.b>=p.b&&(q.a>p.a||q.b>p.b)));}
+return {PARAMS,lhs,toDesign,feats,ridge,pred,r2,rmse,pareto};
+})();
+
+
+(function(){
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const REF={city:'athens',future:false,use:'residential',floors:3,area:450,aspect:1.8,orient:0,wwrMain:0.4,wwrOther:0.2,shade:0.6,g:0.45,
+  insulation:'improved',mass:'heavy',nightVent:true,hr:true,roofPV:0.8,facadePV:0.5,battery:15,pImp:0.18,pExp:0.066,
+  w_thermal:3,w_daylight:2,w_glare:1,w_circadian:1,w_view:1,w_air:1,w_qualitative:1,q_bio:3,q_control:3,q_delight:3};
+let st={...REF};
+try{const s=localStorage.getItem('aw-state');if(s)st={...REF,...JSON.parse(s)};}catch(e){}
+if(!ENGINE.CITIES[st.city])st.city='athens';
+const MAP={"x0": 19.2, "y1": 41.85, "k": 0.784776370533083, "sx": 71.45317884259144};
+const CK=Object.keys(ENGINE.CITIES);
+(function fillSelect(){const byR={};CK.forEach(k=>{const c=ENGINE.CITIES[k];(byR[c.region]=byR[c.region]||[]).push(k);});
+  const order=['Attica','Crete','Cyclades','Dodecanese','North & East Aegean','Sporades','Saronic Islands','Ionian Islands','Peloponnese','Western Greece','Central Greece','Thessaly','Epirus','Macedonia','Thrace'];
+  const sel=document.querySelector('#city');
+  order.filter(r=>byR[r]).forEach(r=>{const g=document.createElement('optgroup');g.label=r;
+    byR[r].sort((a,b)=>ENGINE.CITIES[a].name.localeCompare(ENGINE.CITIES[b].name)).forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=`${ENGINE.CITIES[k].name}  (Zone ${ENGINE.CITIES[k].zone})`;g.appendChild(o);});sel.appendChild(g);});})();
+function proj(lon,lat){return [(lon-MAP.x0)*MAP.k*MAP.sx,(MAP.y1-lat)*MAP.sx];}
+function drawMap(){const g=document.querySelector('#dots');g.innerHTML='';const NS='http://www.w3.org/2000/svg';let selXY=null;
+  CK.forEach(k=>{const c=ENGINE.CITIES[k];const [x,y]=proj(c.lon,c.lat);const e=document.createElementNS(NS,'circle');
+    e.setAttribute('cx',x);e.setAttribute('cy',y);e.setAttribute('r',k===st.city?12:7.5);e.setAttribute('fill',`var(--z${c.zone})`);
+    if(k===st.city){e.setAttribute('class','sel');selXY=[x,y,c.name];}
+    const t=document.createElementNS(NS,'title');t.textContent=`${c.name} · Zone ${c.zone}`;e.appendChild(t);
+    e.addEventListener('click',()=>{st.city=k;sync();schedule();});g.appendChild(e);});
+  if(selXY){const t=document.createElementNS(NS,'text');const right=selXY[0]<430;t.setAttribute('x',selXY[0]+(right?18:-18));t.setAttribute('y',selXY[1]+8);
+    t.setAttribute('text-anchor',right?'start':'end');t.textContent=selXY[2];g.appendChild(t);}}
+function cityInfo(){const c=ENGINE.CITIES[st.city];const cl=ENGINE.climate(st.city,st.future);let hdd=0,cdd=0;
+  for(let d=0;d<365;d++){let s=0;for(let h=0;h<24;h++)s+=cl.Te[d*24+h];const t=s/24;hdd+=Math.max(0,18-t);cdd+=Math.max(0,t-18);}
+  const ghi=c.H.reduce((a,b,i)=>a+b*[31,28,31,30,31,30,31,31,30,31,30,31][i],0);
+  const type={i:'island',c:'coastal',n:'inland',m:'mountain'}[c.type];
+  document.querySelector('#cityInfo').textContent=`KENAK Zone ${c.zone} · ${c.region} · ${type} climate · about ${Math.round(hdd/10)*10} heating and ${Math.round(cdd/10)*10} cooling degree days · ${Math.round(ghi)} kWh/m² sun per year`;}
+
+const fmt={area:v=>v+' m²',floors:v=>v,aspect:v=>(+v).toFixed(1)+' : 1',orient:v=>v==0?'South':(v<0?'SE ':'SW ')+Math.abs(v)+'°'.replace('SE 90°','East'),
+  wwrMain:v=>Math.round(v*100)+'%',wwrOther:v=>Math.round(v*100)+'%',g:v=>(+v).toFixed(2),shade:v=>(+v).toFixed(1)+' m',roofPV:v=>Math.round(v*100)+'%',
+  facadePV:v=>Math.round(v*100)+'%',battery:v=>v+' kWh',pImp:v=>'€'+(+v).toFixed(2)+'/kWh',pExp:v=>'€'+(+v).toFixed(3)+'/kWh'};
+function orientLabel(v){v=+v;if(v===0)return 'South';if(v===-90)return 'East';if(v===90)return 'West';return (v<0?'South-east ':'South-west ')+Math.abs(v)+'°';}
+fmt.orient=orientLabel;
+function sync(){
+  $$('input[type=range]').forEach(el=>{el.value=st[el.id];const o=$(`output[data-for="${el.id}"]`);if(o)o.textContent=(fmt[el.id]||(v=>v))(st[el.id]);});
+  ['nightVent','hr'].forEach(k=>$('#'+k).checked=!!st[k]);
+  $$('.seg').forEach(s=>{const k=s.dataset.key;s.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v)===String(st[k])));});
+  $('#city').value=st.city; drawMap(); cityInfo();
+}
+function params(){return {...st,floors:+st.floors,area:+st.area,aspect:+st.aspect,orient:+st.orient,wwrMain:+st.wwrMain,wwrOther:+st.wwrOther,shade:+st.shade,g:+st.g,roofPV:+st.roofPV,facadePV:+st.facadePV,battery:+st.battery};}
+const weights=()=>({thermal:+st.w_thermal,daylight:+st.w_daylight,glare:+st.w_glare,circadian:+st.w_circadian,view:+st.w_view,air:+st.w_air,qualitative:+st.w_qualitative});
+const qual=()=>((+st.q_bio)+(+st.q_control)+(+st.q_delight)-3)/12*100;
+let timer=null,last=null;
+function schedule(){clearTimeout(timer);timer=setTimeout(run,60);try{localStorage.setItem('aw-state',JSON.stringify(st));}catch(e){}}
+function run(){const r=ENGINE.simulate(params());last=r;render(r);}
+const el=(n,a={},kids=[])=>{const e=document.createElementNS('http://www.w3.org/2000/svg',n);for(const k in a)e.setAttribute(k,a[k]);kids.forEach(c=>e.appendChild(c));return e;};
+const txt=(x,y,s,a={})=>{const t=el('text',{x,y,...a});t.textContent=s;return t;};
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function mix(a,b,t){const p=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));const A=p(a),B=p(b);return `rgb(${A.map((v,i)=>Math.round(v+(B[i]-v)*t)).join(',')})`;}
+function render(r){
+  $('#ssBig').innerHTML=Math.round(r.SS*100)+'<small>%</small>';
+  const cost=r.I*st.pImp-r.E*st.pExp;
+  const k=[[Math.round(r.SC*100)+'%','of solar used on site'],[r.kWp.toFixed(1)+' kWp','PV installed'],[Math.round(r.PVt/1000*10)/10+' MWh','solar per year'],
+    [Math.round(r.Ltot/1000*10)/10+' MWh','electricity demand'],[Math.round(r.I/1000*10)/10+' MWh','bought from the grid'],[Math.round(r.E/1000*10)/10+' MWh','exported'],
+    [r.autH.toFixed(1)+' h','of average night demand a full battery covers'],[(cost<0?'−€':'€')+Math.abs(Math.round(cost)).toLocaleString(),'net electricity bill per year'],
+    [Math.round(r.eui)+' kWh/m²','electricity use per floor area'],[Math.round((r.PVt/r.Ltot)*100)+'%','annual solar vs demand']];
+  $('#kpis').innerHTML=k.map(([a,b])=>`<div class="kpi"><b>${a}</b><span>${b}</span></div>`).join('');
+  // carpet
+  const sv=$('#carpet');sv.innerHTML='';const W=760,H=300,L=44,T=10,cw=(W-L-10)/24,ch=(H-T-30)/12;
+  const absv=r.carpet.flat().map(Math.abs).sort((a,b)=>a-b);let mx=absv[Math.floor(absv.length*0.95)]||1;
+  const bg=css('--panel')||'#F8FAF9',sun=css('--sun')||'#D9961A',def=css('--deficit')||'#2F5F8A';
+  const toHex=c=>{if(c.startsWith('#'))return c;return '#F8FAF9';};
+  const M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  r.carpet.forEach((row,m)=>{row.forEach((v,h)=>{const t=Math.min(1,Math.abs(v)/mx)**0.7;
+    sv.appendChild(el('rect',{x:L+h*cw+0.5,y:T+m*ch+0.5,width:cw-1,height:ch-1,rx:2,fill:mix(toHex(bg),toHex(v>0?sun:def),t)},[(()=>{const ti=el('title');ti.textContent=`${M[m]} ${h}:00 — ${v>0?'+':''}${v.toFixed(1)} kWh`;return ti;})()]));});
+    sv.appendChild(txt(L-8,T+m*ch+ch/2+4,M[m],{'text-anchor':'end'}));});
+  for(let h=0;h<24;h+=3)sv.appendChild(txt(L+h*cw+cw/2,H-10,h+':00',{'text-anchor':'middle'}));
+  $('#carpetScale').textContent=`full colour at ±${mx.toFixed(1)} kWh per hour`;
+  // monthly
+  const ms=$('#monthly');ms.innerHTML='';const mW=440,mH=240,ml=40,mb=24,bw=(mW-ml-6)/12;
+  const mm=Math.max(...r.mLoad,...r.mPV)||1;const sy=v=>mH-mb-(v/mm)*(mH-mb-12);
+  [0,0.5,1].forEach(f=>{const y=sy(mm*f);ms.appendChild(el('line',{x1:ml,x2:mW,y1:y,y2:y,stroke:css('--line'),'stroke-width':1}));ms.appendChild(txt(ml-6,y+4,Math.round(mm*f/1000*10)/10+'',{'text-anchor':'end'}));});
+  ms.appendChild(txt(4,12,'MWh'));
+  r.mLoad.forEach((v,m)=>{const x=ml+m*bw;
+    ms.appendChild(el('rect',{x:x+bw*0.14,y:sy(r.mPV[m]),width:bw*0.36,height:mH-mb-sy(r.mPV[m]),fill:css('--sun'),rx:2}));
+    ms.appendChild(el('rect',{x:x+bw*0.52,y:sy(r.mImp[m]),width:bw*0.36,height:mH-mb-sy(r.mImp[m]),fill:css('--deficit'),rx:2}));
+    ms.appendChild(el('line',{x1:x+bw*0.08,x2:x+bw*0.92,y1:sy(v),y2:sy(v),stroke:css('--ink'),'stroke-width':2.5}));
+    ms.appendChild(txt(x+bw/2,mH-8,M[m][0],{'text-anchor':'middle'}));});
+  // well-being
+  const q=qual(), wi=ENGINE.wbIndex(r.wb,q,weights());
+  $('#wbIndex').textContent=Math.round(wi);$('#mbSS').textContent=Math.round(r.SS*100)+'%';$('#mbWB').textContent=Math.round(wi);
+  const items=[['Thermal comfort',r.wb.thermal,'Occupied hours in the adaptive range without mechanical cooling or heating'],['Daylight',r.wb.daylight,'Share of floor well daylit (average daylight factor proxy)'],
+    ['Freedom from glare',r.wb.glare,'Low-sun hours through large glazing, inverted'],['Morning light',r.wb.circadian,'Days with ≥3 morning hours of ≥250 lx melanopic light'],
+    ['View out',r.wb.view,'EN 17037 view level from main-facade glazing'],['Fresh-air hours',r.wb.air,'Occupied hours mild enough to open windows'],['Qualitative',q,'Your team\'s assessment']];
+  $('#wbBars').innerHTML=items.map(([n,v,t])=>`<div class="wb-row" title="${t}"><span>${n}</span><div class="bar"><i style="width:${Math.max(0,Math.min(100,v))}%"></i></div><output>${Math.round(v)}</output></div>`).join('');
+  drawScatter();
+}
+// sampling + surrogate
+let sample=null;
+function drawScatter(){
+  const s=$('#scatter');s.innerHTML='';const W=440,H=320,l=44,b=36,t=10,rr=10;
+  const x=v=>l+(v/100)*(W-l-rr), y=v=>H-b-(v/100)*(H-b-t);
+  for(let v=0;v<=100;v+=25){s.appendChild(el('line',{x1:x(v),x2:x(v),y1:t,y2:H-b,stroke:css('--line')}));s.appendChild(el('line',{x1:l,x2:W-rr,y1:y(v),y2:y(v),stroke:css('--line')}));
+    s.appendChild(txt(x(v),H-b+14,v,{'text-anchor':'middle'}));s.appendChild(txt(l-6,y(v)+4,v,{'text-anchor':'end'}));}
+  s.appendChild(txt((W+l)/2,H-4,'Self-sufficiency (%)',{'text-anchor':'middle'}));
+  s.appendChild(txt(12,(H-b)/2,'Well-being index',{'text-anchor':'middle',transform:`rotate(-90 12 ${(H-b)/2})`}));
+  if(sample){
+    const w=weights(),q=qual();
+    const pts=sample.rows.map(r=>({a:r.SS,b:ENGINE.wbIndex(r.wb,q,w),r}));
+    const pf=SUR.pareto(pts).sort((p,q)=>p.a-q.a);
+    pts.forEach(p=>{const c=el('circle',{cx:x(p.a),cy:y(p.b),r:3.2,fill:css('--muted'),'fill-opacity':.35,style:'cursor:pointer'});
+      c.addEventListener('click',()=>loadDesign(p.r.d));const ti=el('title');ti.textContent=`SS ${p.a.toFixed(0)}% · WB ${p.b.toFixed(0)} — click to load`;c.appendChild(ti);s.appendChild(c);});
+    s.appendChild(el('polyline',{points:pf.map(p=>`${x(p.a)},${y(p.b)}`).join(' '),fill:'none',stroke:css('--sea'),'stroke-width':1.5}));
+    pf.forEach(p=>{const c=el('circle',{cx:x(p.a),cy:y(p.b),r:5,fill:css('--sea'),style:'cursor:pointer'});c.addEventListener('click',()=>loadDesign(p.r.d));
+      const ti=el('title');ti.textContent=`Pareto: SS ${p.a.toFixed(0)}% · WB ${p.b.toFixed(0)} — click to load`;c.appendChild(ti);s.appendChild(c);});
+  }
+  if(last){const wi=ENGINE.wbIndex(last.wb,qual(),weights());s.appendChild(el('circle',{cx:x(last.SS*100),cy:y(wi),r:7,fill:'none',stroke:css('--warn'),'stroke-width':2.5}));}
+  if(sample)renderSurrogate();
+}
+function loadDesign(d){['aspect','orient','wwrMain','wwrOther','shade','g','roofPV','facadePV','battery'].forEach(k=>{
+  const inp=$('#'+k);const step=+inp.step, mn=+inp.min;st[k]=+(Math.round((d[k]-mn)/step)*step+mn).toFixed(3);});
+  st.insulation=d.insulation;st.mass=d.mass;st.nightVent=d.nightVent;sync();schedule();}
+async function doSample(){
+  const btn=$('#sample');btn.disabled=true;$('#sampleStatus').textContent='Simulating…';
+  const U=SUR.lhs(300,Date.now()%100000),base=params(),rows=[];
+  for(let i=0;i<U.length;i++){const d=SUR.toDesign(U[i],base);d.battery=d.battery*(+base.area/450);const r=ENGINE.simulate(d);rows.push({u:U[i],d,SS:r.SS*100,wb:r.wb});
+    if(i%20===19){$('#sampleStatus').textContent=`Simulating ${i+1} / 300`;await new Promise(res=>setTimeout(res,0));}}
+  sample={rows,base};btn.disabled=false;$('#sampleStatus').textContent='300 designs simulated';drawScatter();}
+function renderSurrogate(){
+  const w=weights(),q=qual(),rows=sample.rows,n=225;
+  const X=rows.map(r=>SUR.feats(r.u));const out={};
+  for(const k of ['SS','WB']){const y=rows.map(r=>k==='SS'?r.SS:ENGINE.wbIndex(r.wb,q,w));const wts=SUR.ridge(X.slice(0,n),y.slice(0,n),0.05);
+    const yh=X.slice(n).map(x=>SUR.pred(wts,x));out[k]={r2:SUR.r2(y.slice(n),yh),rmse:SUR.rmse(y.slice(n),yh),wts,y:y.slice(n),yh};}
+  // importance: |mean effect| via finite differences on surrogate
+  const imp=SUR.PARAMS.map((p,j)=>{let dS=0,dW=0;rows.slice(0,60).forEach(r=>{const a=[...r.u],b=[...r.u];a[j]=0;b[j]=1;
+    dS+=SUR.pred(out.SS.wts,SUR.feats(b))-SUR.pred(out.SS.wts,SUR.feats(a));dW+=SUR.pred(out.WB.wts,SUR.feats(b))-SUR.pred(out.WB.wts,SUR.feats(a));});return {k:p.k,dS:dS/60,dW:dW/60};});
+  const names={aspect:'Length : depth',orient:'Orientation',wwrMain:'Glazing, main',wwrOther:'Glazing, other',shade:'Overhang',g:'g-value',ins:'Insulation',massI:'Thermal mass',nv:'Night ventilation',roofPV:'Roof PV',facadePV:'Facade BIPV',battery:'Battery'};
+  const top=[...imp].sort((a,b)=>Math.abs(b.dS)+Math.abs(b.dW)-Math.abs(a.dS)-Math.abs(a.dW)).slice(0,7);
+  const f=v=>(v>0?'+':'')+v.toFixed(0);
+  $('#surr').innerHTML=`<p class="sub" style="margin-top:0">Quadratic ridge surrogate trained on 225 designs, tested on 75 unseen ones.</p>
+   <table><tr><th>Target</th><th>R²</th><th>RMSE</th></tr>
+   <tr><td>Self-sufficiency</td><td>${out.SS.r2.toFixed(2)}</td><td>${out.SS.rmse.toFixed(1)} pts</td></tr>
+   <tr><td>Well-being index</td><td>${out.WB.r2.toFixed(2)}</td><td>${out.WB.rmse.toFixed(1)} pts</td></tr></table>
+   <p class="sub" style="margin:14px 0 6px">Effect of moving each parameter from its minimum to its maximum, averaged over designs:</p>
+   <table><tr><th>Parameter</th><th>Self-sufficiency</th><th>Well-being</th></tr>
+   ${top.map(t=>`<tr><td>${names[t.k]}</td><td>${f(t.dS)}</td><td>${f(t.dW)}</td></tr>`).join('')}</table>`;
+}
+// scenarios
+let scen=[];try{scen=JSON.parse(localStorage.getItem('aw-scen')||'[]');}catch(e){}
+function saveScen(){if(!last)return;const r=last,wi=ENGINE.wbIndex(r.wb,qual(),weights());
+  scen.push({name:`${ENGINE.CITIES[st.city].name} ${st.future?'2050':'today'} · ${st.use}`,SS:r.SS*100,SC:r.SC*100,kWp:r.kWp,bat:+st.battery,wwr:+st.wwrMain,ins:st.insulation,
+    I:r.I/1000,cost:r.I*st.pImp-r.E*st.pExp,th:r.wb.thermal,dl:r.wb.daylight,wb:wi,state:{...st}});
+  try{localStorage.setItem('aw-scen',JSON.stringify(scen));}catch(e){}renderScen();}
+function renderScen(){const t=$('#cmp');if(!scen.length){t.innerHTML='<tr><td style="color:var(--muted)">No scenarios saved yet. Save the current design to start a comparison.</td></tr>';return;}
+  t.innerHTML=`<tr><th>Scenario</th><th>Self-suff.</th><th>Self-cons.</th><th>PV</th><th>Battery</th><th>Glazing</th><th>Insulation</th><th>Grid import</th><th>Net bill</th><th>Comfort</th><th>Daylight</th><th>Well-being</th><th></th></tr>`+
+  scen.map((s,i)=>`<tr><td>${String.fromCharCode(65+i)}. ${s.name}</td><td>${s.SS.toFixed(0)}%</td><td>${s.SC.toFixed(0)}%</td><td>${s.kWp.toFixed(1)} kWp</td><td>${s.bat} kWh</td><td>${Math.round(s.wwr*100)}%</td><td>${s.ins}</td><td>${s.I.toFixed(1)} MWh</td><td>€${Math.round(s.cost).toLocaleString()}</td><td>${s.th.toFixed(0)}</td><td>${s.dl.toFixed(0)}</td><td>${s.wb.toFixed(0)}</td><td><button class="btn ghost" data-load="${i}" style="padding:3px 8px;font-size:12.5px">Load</button></td></tr>`).join('');
+  t.querySelectorAll('[data-load]').forEach(b=>b.addEventListener('click',()=>{st={...REF,...scen[+b.dataset.load].state};sync();schedule();}));}
+// events
+$$('input[type=range]').forEach(i=>i.addEventListener('input',()=>{st[i.id]=+i.value;const o=$(`output[data-for="${i.id}"]`);if(o)o.textContent=(fmt[i.id]||(v=>v))(i.value);
+  if(i.id.startsWith('w_')||i.id.startsWith('q_')){try{localStorage.setItem('aw-state',JSON.stringify(st));}catch(e){} if(last)render(last);} else schedule();}));
+['nightVent','hr'].forEach(k=>$('#'+k).addEventListener('change',e=>{st[k]=e.target.checked;schedule();}));
+$$('.seg').forEach(s=>s.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;let v=b.dataset.v;if(v==='true')v=true;if(v==='false')v=false;st[s.dataset.key]=v;sync();schedule();}));
+$('#city').addEventListener('change',e=>{st.city=e.target.value;sync();schedule();});
+$('#reset').addEventListener('click',()=>{st={...REF,city:st.city};sync();schedule();});
+$('#sample').addEventListener('click',doSample);
+$('#save').addEventListener('click',saveScen);
+$('#clear').addEventListener('click',()=>{scen=[];try{localStorage.removeItem('aw-scen');}catch(e){}renderScen();});
+matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',()=>last&&render(last));
+const STANDALONE=true;
+if(STANDALONE){$('#exportBar').hidden=false;
+  $('#print').addEventListener('click',()=>{const c=ENGINE.CITIES[st.city];$('#printsum').innerHTML=`<b>Scenario:</b> ${c.name} (Zone ${c.zone}), ${st.use}, ${st.future?'2050':'today'} · ${st.area} m², ${st.floors} floors · glazing ${Math.round(st.wwrMain*100)}% / ${Math.round(st.wwrOther*100)}% · ${st.insulation} insulation, ${st.mass} mass · overhang ${st.shade} m · roof PV ${Math.round(st.roofPV*100)}%, facade BIPV ${Math.round(st.facadePV*100)}%, battery ${st.battery} kWh`;window.print();});
+  $('#csv').addEventListener('click',()=>{if(!last)return;const r=last,c=ENGINE.CITIES[st.city],q=qual(),wi=ENGINE.wbIndex(r.wb,q,weights());
+    const rows=[['Energy Autonomy and Human Well-Being in Greek Buildings - Marko Nika'],['Indicative results from a reduced-order model'],[],['Parameter','Value']];
+    rows.push(['Location',c.name],['KENAK zone',c.zone],['Region',c.region]);
+    Object.entries(st).forEach(([k,v])=>{if(k!=='city')rows.push([k,v]);});
+    rows.push([],['Result','Value','Unit'],['Self-sufficiency',(r.SS*100).toFixed(1),'%'],['Self-consumption',(r.SC*100).toFixed(1),'%'],['PV capacity',r.kWp.toFixed(1),'kWp'],
+      ['PV generation',Math.round(r.PVt),'kWh/yr'],['Electricity demand',Math.round(r.Ltot),'kWh/yr'],['Grid import',Math.round(r.I),'kWh/yr'],['Export',Math.round(r.E),'kWh/yr'],
+      ['Heating need',Math.round(r.heat),'kWh/yr'],['Cooling need',Math.round(r.cool),'kWh/yr'],['Net electricity bill',Math.round(r.I*st.pImp-r.E*st.pExp),'EUR/yr'],
+      ['Well-being index',wi.toFixed(1),'0-100']);
+    Object.entries(r.wb).forEach(([k,v])=>rows.push(['Well-being: '+k,v.toFixed(1),'0-100']));
+    rows.push([],['Month','Demand kWh','PV kWh','Grid import kWh']);
+    ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].forEach((m,i)=>rows.push([m,Math.round(r.mLoad[i]),Math.round(r.mPV[i]),Math.round(r.mImp[i])]));
+    const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));a.download=`autonomy-wellbeing-${st.city}.csv`;document.body.appendChild(a);a.click();a.remove();});}
+sync();renderScen();run();
+})();
+</script>
+</body>
+</html>
